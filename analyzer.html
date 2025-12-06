@@ -121,6 +121,122 @@
                 </div>
             </div>
 
+            <div class="chart-grid-3">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Monthly Activity</h3>
+                        <p class="chart-subtitle">Messages per month</p>
+                    </div>
+                    <canvas id="monthlyChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Peak Activity Times</h3>
+                        <p class="chart-subtitle">Most active hours</p>
+                    </div>
+                    <canvas id="peakTimesChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Emotion Breakdown</h3>
+                        <p class="chart-subtitle">Message emotion distribution</p>
+                    </div>
+                    <canvas id="emotionChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Key Insights</h2>
+                <p class="section-description">Important metrics at a glance</p>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 class="kpi-value">12 days</h3>
+                        <p class="kpi-label">Longest Streak</p>
+                        <p class="kpi-sublabel">Consecutive days chatting</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 class="kpi-value">89</h3>
+                        <p class="kpi-label">Busiest Day</p>
+                        <p class="kpi-sublabel">Messages on Jan 15</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 9V5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5V9M12 12V15M6 21H18C19.1046 21 20 20.1046 20 19V11C20 9.89543 19.1046 9 18 9H6C4.89543 9 4 9.89543 4 11V19C4 20.1046 4.89543 21 6 21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 class="kpi-value">78%</h3>
+                        <p class="kpi-label">Text Messages</p>
+                        <p class="kpi-sublabel">1,980 of 2,547 total</p>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 8H17M7 12H11M8 16H16M6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-content">
+                        <h3 class="kpi-value">42</h3>
+                        <p class="kpi-label">Avg Words/Message</p>
+                        <p class="kpi-sublabel">John's messages</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Time Analysis</h2>
+                <p class="section-description">When you communicate most</p>
+            </div>
+
+            <div class="chart-grid-3">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Busiest Days</h3>
+                        <p class="chart-subtitle">Top 10 most active dates</p>
+                    </div>
+                    <canvas id="busiestDaysChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Average Daily Messages</h3>
+                        <p class="chart-subtitle">Messages per day over time</p>
+                    </div>
+                    <canvas id="avgDailyChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Weekend vs Weekday</h3>
+                        <p class="chart-subtitle">Activity comparison</p>
+                    </div>
+                    <canvas id="weekendChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
             <div class="section-header">
                 <h2 class="section-title">Participant Breakdown</h2>
                 <p class="section-description">Individual statistics and contributions</p>
@@ -278,6 +394,42 @@
                         <p class="chart-subtitle">Messages by day of week</p>
                     </div>
                     <canvas id="weeklyChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Conversation Snippets</h2>
+                <p class="section-description">Sample message exchange</p>
+            </div>
+
+            <div class="chat-briefs-section">
+                <div class="chat-brief-card compact">
+                    <div class="chat-messages">
+                        <div class="chat-message sent">
+                            <div class="message-bubble">
+                                <p>Hey! Did you see the new project updates?</p>
+                                <span class="message-time">10:23 AM</span>
+                            </div>
+                        </div>
+                        <div class="chat-message received">
+                            <div class="message-bubble">
+                                <p>Yes! They look amazing 🔥</p>
+                                <span class="message-time">10:25 AM</span>
+                            </div>
+                        </div>
+                        <div class="chat-message sent">
+                            <div class="message-bubble">
+                                <p>Should we schedule a meeting?</p>
+                                <span class="message-time">10:27 AM</span>
+                            </div>
+                        </div>
+                        <div class="chat-message received">
+                            <div class="message-bubble">
+                                <p>Definitely! Tomorrow at 2pm? 📅</p>
+                                <span class="message-time">10:28 AM</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

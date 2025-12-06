@@ -294,4 +294,361 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   }
+
+  const monthlyCtx = document.getElementById("monthlyChart");
+  if (monthlyCtx) {
+    new Chart(monthlyCtx, {
+      type: "line",
+      data: {
+        labels: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+        datasets: [
+          {
+            label: "Messages",
+            data: [180, 220, 310, 290, 420, 380, 450, 390, 410, 360, 330, 280],
+            borderColor: chartColors.primary,
+            backgroundColor: `${chartColors.primary}20`,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const peakTimesCtx = document.getElementById("peakTimesChart");
+  if (peakTimesCtx) {
+    new Chart(peakTimesCtx, {
+      type: "bar",
+      data: {
+        labels: [
+          "Morning\n(6-12)",
+          "Afternoon\n(12-18)",
+          "Evening\n(18-24)",
+          "Night\n(0-6)",
+        ],
+        datasets: [
+          {
+            label: "Messages",
+            data: [420, 680, 1240, 207],
+            backgroundColor: [
+              chartColors.orange,
+              chartColors.secondary,
+              chartColors.primary,
+              chartColors.purple,
+            ],
+            borderRadius: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const emotionCtx = document.getElementById("emotionChart");
+  if (emotionCtx) {
+    new Chart(emotionCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["Happy", "Excited", "Neutral", "Sad", "Angry"],
+        datasets: [
+          {
+            data: [920, 680, 560, 250, 137],
+            backgroundColor: [
+              chartColors.accent,
+              chartColors.orange,
+              chartColors.secondary,
+              chartColors.blue,
+              chartColors.rose,
+            ],
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 12,
+              padding: 10,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const conversationCtx = document.getElementById("conversationChart");
+  if (conversationCtx) {
+    new Chart(conversationCtx, {
+      type: "bar",
+      data: {
+        labels: ["John", "Jane"],
+        datasets: [
+          {
+            label: "Conversations Started",
+            data: [62, 58],
+            backgroundColor: [chartColors.primary, chartColors.secondary],
+            borderRadius: 8,
+            barThickness: 80,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: "y",
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          y: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const messageTypesCtx = document.getElementById("messageTypesChart");
+  if (messageTypesCtx) {
+    new Chart(messageTypesCtx, {
+      type: "pie",
+      data: {
+        labels: ["Text", "Images", "Videos", "Links", "Voice Messages"],
+        datasets: [
+          {
+            data: [1980, 320, 89, 112, 46],
+            backgroundColor: [
+              chartColors.primary,
+              chartColors.secondary,
+              chartColors.accent,
+              chartColors.orange,
+              chartColors.rose,
+            ],
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 12,
+              padding: 10,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const busiestDaysCtx = document.getElementById("busiestDaysChart");
+  if (busiestDaysCtx) {
+    new Chart(busiestDaysCtx, {
+      type: "bar",
+      data: {
+        labels: [
+          "Jan 15",
+          "Feb 3",
+          "Mar 22",
+          "Apr 8",
+          "May 12",
+          "Jun 5",
+          "Jul 18",
+          "Aug 9",
+          "Sep 14",
+          "Oct 2",
+        ],
+        datasets: [
+          {
+            label: "Messages",
+            data: [89, 84, 78, 76, 73, 71, 69, 67, 65, 63],
+            backgroundColor: chartColors.primary,
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const avgDailyCtx = document.getElementById("avgDailyChart");
+  if (avgDailyCtx) {
+    new Chart(avgDailyCtx, {
+      type: "line",
+      data: {
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+        datasets: [
+          {
+            label: "Avg Messages/Day",
+            data: [35, 42, 38, 45, 40, 37],
+            borderColor: chartColors.secondary,
+            backgroundColor: `${chartColors.secondary}30`,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: chartColors.secondary,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  const weekendCtx = document.getElementById("weekendChart");
+  if (weekendCtx) {
+    new Chart(weekendCtx, {
+      type: "bar",
+      data: {
+        labels: ["Weekday", "Weekend"],
+        datasets: [
+          {
+            label: "Total Messages",
+            data: [1820, 727],
+            backgroundColor: [chartColors.primary, chartColors.accent],
+            borderRadius: 8,
+            barThickness: 100,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: "#E4E4E7",
+            },
+          },
+          x: {
+            grid: {
+              display: false,
+            },
+          },
+        },
+      },
+    });
+  }
 });
