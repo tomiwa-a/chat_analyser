@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Analysis - ChatLens</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/analyzer.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="24" height="24" rx="6" fill="#6366F1"/>
+                        <path d="M12 16L15 19L20 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="logo-text">ChatLens</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html">Back to Home</a>
+                    <button class="btn-primary nav-cta">New Analysis</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="analyzer-main">
+        <div class="container">
+            <div class="upload-section">
+                <div class="upload-card">
+                    <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 15V3M12 3L8 7M12 3L16 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L2 19C2 20.1046 2.89543 21 4 21L20 21C21.1046 21 22 20.1046 22 19V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <h2 class="upload-title">Drop your WhatsApp export here</h2>
+                    <p class="upload-description">Support for .txt and .zip files • Maximum 50MB</p>
+                    <button class="btn-primary btn-large">Browse Files</button>
+                </div>
+            </div>
+
+            <div class="demo-label">
+                <span class="demo-badge">Demo Data</span>
+                <p>Showing sample analysis from a conversation with 2,547 messages</p>
+            </div>
+
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 10H16M8 14H12M6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">2,547</h3>
+                        <p class="stat-label">Total Messages</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 20H22V18C22 16.3431 20.6569 15 19 15C18.0444 15 17.1931 15.4468 16.6438 16.1429M17 20H7M17 20V18C17 17.3438 16.8736 16.717 16.6438 16.1429M7 20H2V18C2 16.3431 3.34315 15 5 15C5.95561 15 6.80686 15.4468 7.35625 16.1429M7 20V18C7 17.3438 7.12642 16.717 7.35625 16.1429M7.35625 16.1429C8.0935 14.301 9.89482 13 12 13C14.1052 13 15.9065 14.301 16.6438 16.1429M15 7C15 8.65685 13.6569 10 12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7ZM21 10C21 11.1046 20.1046 12 19 12C17.8954 12 17 11.1046 17 10C17 8.89543 17.8954 8 19 8C20.1046 8 21 8.89543 21 10ZM7 10C7 11.1046 6.10457 12 5 12C3.89543 12 3 11.1046 3 10C3 8.89543 3.89543 8 5 8C6.10457 8 7 8.89543 7 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">2</h3>
+                        <p class="stat-label">Participants</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">+72%</h3>
+                        <p class="stat-label">Positive Sentiment</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-value">3.2min</h3>
+                        <p class="stat-label">Avg Response Time</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid-2">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Activity Over Time</h3>
+                        <select class="chart-select">
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                            <option>All Time</option>
+                        </select>
+                    </div>
+                    <canvas id="activityChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Hourly Activity Heatmap</h3>
+                        <p class="chart-subtitle">Messages by hour of day</p>
+                    </div>
+                    <canvas id="hourlyChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Participant Breakdown</h2>
+                <p class="section-description">Individual statistics and contributions</p>
+            </div>
+
+            <div class="participants-grid">
+                <div class="participant-card">
+                    <div class="participant-header">
+                        <div class="participant-avatar purple">JD</div>
+                        <div class="participant-info">
+                            <h3 class="participant-name">John Doe</h3>
+                            <p class="participant-meta">1,342 messages • 52.7%</p>
+                        </div>
+                    </div>
+                    <div class="participant-stats">
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Avg Length</span>
+                            <span class="participant-stat-value">42 words</span>
+                        </div>
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Most Active</span>
+                            <span class="participant-stat-value">22:00-23:00</span>
+                        </div>
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Sentiment</span>
+                            <span class="participant-stat-value positive">+68%</span>
+                        </div>
+                    </div>
+                    <div class="participant-emojis">
+                        <h4 class="participant-emoji-title">Top Emojis</h4>
+                        <div class="emoji-list">
+                            <div class="emoji-item">
+                                <span class="emoji">😂</span>
+                                <span class="emoji-count">147</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">❤️</span>
+                                <span class="emoji-count">89</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">🔥</span>
+                                <span class="emoji-count">56</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">👍</span>
+                                <span class="emoji-count">43</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="participant-card">
+                    <div class="participant-header">
+                        <div class="participant-avatar blue">JS</div>
+                        <div class="participant-info">
+                            <h3 class="participant-name">Jane Smith</h3>
+                            <p class="participant-meta">1,205 messages • 47.3%</p>
+                        </div>
+                    </div>
+                    <div class="participant-stats">
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Avg Length</span>
+                            <span class="participant-stat-value">38 words</span>
+                        </div>
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Most Active</span>
+                            <span class="participant-stat-value">14:00-15:00</span>
+                        </div>
+                        <div class="participant-stat">
+                            <span class="participant-stat-label">Sentiment</span>
+                            <span class="participant-stat-value positive">+76%</span>
+                        </div>
+                    </div>
+                    <div class="participant-emojis">
+                        <h4 class="participant-emoji-title">Top Emojis</h4>
+                        <div class="emoji-list">
+                            <div class="emoji-item">
+                                <span class="emoji">💕</span>
+                                <span class="emoji-count">132</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">😊</span>
+                                <span class="emoji-count">98</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">🎉</span>
+                                <span class="emoji-count">67</span>
+                            </div>
+                            <div class="emoji-item">
+                                <span class="emoji">✨</span>
+                                <span class="emoji-count">54</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid-3">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sentiment Trend</h3>
+                        <p class="chart-subtitle">Emotional tone over time</p>
+                    </div>
+                    <canvas id="sentimentChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Message Length Distribution</h3>
+                        <p class="chart-subtitle">Words per message</p>
+                    </div>
+                    <canvas id="lengthChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Response Time</h3>
+                        <p class="chart-subtitle">Average reply speed</p>
+                    </div>
+                    <canvas id="responseChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-grid-2">
+                <div class="chart-card word-cloud-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Most Used Words</h3>
+                        <p class="chart-subtitle">Top 20 words (excluding common words)</p>
+                    </div>
+                    <div class="word-cloud">
+                        <span class="word" style="font-size: 2.5rem; color: #7C3AED;">amazing</span>
+                        <span class="word" style="font-size: 2rem; color: #06B6D4;">work</span>
+                        <span class="word" style="font-size: 1.8rem; color: #10B981;">project</span>
+                        <span class="word" style="font-size: 1.5rem; color: #F43F5E;">meeting</span>
+                        <span class="word" style="font-size: 2.2rem; color: #7C3AED;">great</span>
+                        <span class="word" style="font-size: 1.6rem; color: #06B6D4;">definitely</span>
+                        <span class="word" style="font-size: 1.9rem; color: #10B981;">tomorrow</span>
+                        <span class="word" style="font-size: 1.4rem; color: #F43F5E;">lunch</span>
+                        <span class="word" style="font-size: 2.3rem; color: #7C3AED;">perfect</span>
+                        <span class="word" style="font-size: 1.7rem; color: #06B6D4;">weekend</span>
+                        <span class="word" style="font-size: 1.5rem; color: #10B981;">coffee</span>
+                        <span class="word" style="font-size: 2.1rem; color: #F43F5E;">wonderful</span>
+                        <span class="word" style="font-size: 1.8rem; color: #7C3AED;">tonight</span>
+                        <span class="word" style="font-size: 1.6rem; color: #06B6D4;">excited</span>
+                        <span class="word" style="font-size: 1.9rem; color: #10B981;">awesome</span>
+                        <span class="word" style="font-size: 1.4rem; color: #F43F5E;">planning</span>
+                        <span class="word" style="font-size: 2rem; color: #7C3AED;">perfect</span>
+                        <span class="word" style="font-size: 1.7rem; color: #06B6D4;">thinking</span>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Weekly Pattern</h3>
+                        <p class="chart-subtitle">Messages by day of week</p>
+                    </div>
+                    <canvas id="weeklyChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="export-section">
+                <div class="export-card">
+                    <h3 class="export-title">Export Your Analysis</h3>
+                    <p class="export-description">Download your chat analysis data in your preferred format</p>
+                    <div class="export-buttons">
+                        <button class="btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 16V4M12 16L8 12M12 16L16 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4 18V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Export as JSON
+                        </button>
+                        <button class="btn-secondary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 16V4M12 16L8 12M12 16L16 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4 18V19C4 20.1046 4.89543 21 6 21H18C19.1046 21 20 20.1046 20 19V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            Export as PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/analyzer.js"></script>
+</body>
+</html>
