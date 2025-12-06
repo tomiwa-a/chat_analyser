@@ -39,23 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const nav = document.querySelector(".nav");
-  let lastScroll = 0;
-
-  window.addEventListener("scroll", () => {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > 100) {
-      nav.style.background = "rgba(15, 15, 26, 0.95)";
-      nav.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1)";
-    } else {
-      nav.style.background = "rgba(15, 15, 26, 0.8)";
-      nav.style.boxShadow = "none";
-    }
-
-    lastScroll = currentScroll;
-  });
-
   const ctaButtons = document.querySelectorAll(".btn-primary");
   ctaButtons.forEach((button) => {
     button.addEventListener("click", () => {
