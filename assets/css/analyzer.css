@@ -21,6 +21,12 @@
     background: var(--color-bg-muted);
 }
 
+.upload-card.dragover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-muted);
+    border-style: solid;
+}
+
 .upload-icon {
     color: var(--color-primary);
     margin-bottom: 1.5rem;
