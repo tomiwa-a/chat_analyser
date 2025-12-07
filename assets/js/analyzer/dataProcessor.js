@@ -332,6 +332,89 @@ function calculateWordFrequency(messages, participant = null) {
   };
 }
 
+export function getActivityOverTime(messages, days = 30) {
+  if (!messages || messages.length === 0) return { labels: [], data: [] };
+
+  const now = new Date();
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - days);
+
+  const dateCount = {};
+
+  messages.forEach((m) => {
+    const msgDate = new Date(m.date);
+    if (msgDate >= startDate) {
+      const dateKey = msgDate.toISOString().split("T")[0];
+      dateCount[dateKey] = (dateCount[dateKey] || 0) + 1;
+    }
+  });
+
+  const labels = [];
+  const data = [];
+
+  for (let i = 0; i < days; i++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+    const dateKey = date.toISOString().split("T")[0];
+
+    labels.push(formatDate(date));
+    data.push(dateCount[dateKey] || 0);
+  }
+
+  return { labels, data };
+}
+
+export function getHourlyActivity(messages) {
+  if (!messages || messages.length === 0) {
+    return { labels: [], data: [] };
+  }
+
+  const hourCount = new Array(24).fill(0);
+
+  messages.forEach((m) => {
+    const hour = new Date(m.date).getHours();
+    hourCount[hour]++;
+  });
+
+  const labels = [];
+  for (let i = 0; i < 24; i++) {
+    const period = i >= 12 ? "PM" : "AM";
+    const displayHour = i % 12 || 12;
+    labels.push(`${displayHour}${period}`);
+  }
+
+  return { labels, data: hourCount };
+}
+
+export function getMonthlyActivity(messages) {
+  if (!messages || messages.length === 0) {
+    return { labels: [], data: [] };
+  }
+
+  const monthCount = {};
+
+  messages.forEach((m) => {
+    const date = new Date(m.date);
+    const monthKey = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}`;
+    monthCount[monthKey] = (monthCount[monthKey] || 0) + 1;
+  });
+
+  const sortedMonths = Object.keys(monthCount).sort();
+  const labels = sortedMonths.map((key) => {
+    const [year, month] = key.split("-");
+    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+  });
+  const data = sortedMonths.map((key) => monthCount[key]);
+
+  return { labels, data };
+}
+
 export function renderWordCloud(wordData) {
   const canvas = document.getElementById("wordCloud");
   if (!canvas || !wordData.words.length) return;
@@ -588,10 +671,21 @@ export function updateDashboard(messages) {
   const stats = calculateStats(messages);
   const wordFreq = calculateWordFrequency(messages);
 
+  const chartData = {
+    activityOverTime: getActivityOverTime(messages, 30),
+    hourlyActivity: getHourlyActivity(messages),
+    monthlyActivity: getMonthlyActivity(messages),
+  };
+
   updateStatCards(stats);
   updateParticipantCards(messages, stats);
   renderWordCloud(wordFreq);
 
+  import("./chartRenderer.js").then((module) => {
+    module.initializeCharts(chartData);
+  });
+
   console.log("Dashboard updated with stats:", stats);
   console.log("Word frequency:", wordFreq);
+  console.log("Chart data:", chartData);
 }

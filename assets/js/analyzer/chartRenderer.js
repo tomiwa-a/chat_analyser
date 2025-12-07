@@ -1,24 +1,23 @@
 import { chartColors } from "./utils.js";
 
-export function initializeCharts() {
+let chartInstances = {};
+
+export function initializeCharts(chartData = {}) {
+  Object.values(chartInstances).forEach((chart) => {
+    if (chart) chart.destroy();
+  });
+  chartInstances = {};
+
   const activityCtx = document.getElementById("activityChart");
-  if (activityCtx) {
-    new Chart(activityCtx, {
+  if (activityCtx && chartData.activityOverTime) {
+    chartInstances.activity = new Chart(activityCtx, {
       type: "line",
       data: {
-        labels: [
-          "Jan 1",
-          "Jan 5",
-          "Jan 10",
-          "Jan 15",
-          "Jan 20",
-          "Jan 25",
-          "Jan 30",
-        ],
+        labels: chartData.activityOverTime.labels,
         datasets: [
           {
             label: "Messages",
-            data: [45, 89, 120, 95, 142, 108, 156],
+            data: chartData.activityOverTime.data,
             borderColor: chartColors.primary,
             backgroundColor: `${chartColors.primary}20`,
             fill: true,
@@ -40,28 +39,15 @@ export function initializeCharts() {
   }
 
   const hourlyCtx = document.getElementById("hourlyChart");
-  if (hourlyCtx) {
-    new Chart(hourlyCtx, {
+  if (hourlyCtx && chartData.hourlyActivity) {
+    chartInstances.hourly = new Chart(hourlyCtx, {
       type: "bar",
       data: {
-        labels: [
-          "00",
-          "02",
-          "04",
-          "06",
-          "08",
-          "10",
-          "12",
-          "14",
-          "16",
-          "18",
-          "20",
-          "22",
-        ],
+        labels: chartData.hourlyActivity.labels,
         datasets: [
           {
             label: "Messages",
-            data: [12, 8, 5, 15, 45, 67, 89, 123, 145, 167, 189, 98],
+            data: chartData.hourlyActivity.data,
             backgroundColor: chartColors.secondary,
             borderRadius: 6,
           },
@@ -218,28 +204,15 @@ export function initializeCharts() {
   }
 
   const monthlyCtx = document.getElementById("monthlyChart");
-  if (monthlyCtx) {
-    new Chart(monthlyCtx, {
+  if (monthlyCtx && chartData.monthlyActivity) {
+    chartInstances.monthly = new Chart(monthlyCtx, {
       type: "line",
       data: {
-        labels: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ],
+        labels: chartData.monthlyActivity.labels,
         datasets: [
           {
             label: "Messages",
-            data: [180, 220, 310, 290, 420, 380, 450, 390, 410, 360, 330, 280],
+            data: chartData.monthlyActivity.data,
             borderColor: chartColors.primary,
             backgroundColor: `${chartColors.primary}20`,
             fill: true,
