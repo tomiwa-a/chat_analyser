@@ -38,7 +38,10 @@ function findBusiestDay(messages) {
 
   messages.forEach((m) => {
     const d = new Date(m.date);
-    const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(d.getDate()).padStart(2, "0")}`;
     dateCount[dateKey] = (dateCount[dateKey] || 0) + 1;
   });
 
@@ -52,7 +55,7 @@ function findBusiestDay(messages) {
     }
   }
 
-  return { date: busiestDate ? new Date(busiestDate) : null, count: maxCount };
+  return { date: busiestDate, count: maxCount };
 }
 
 function calculateTextMessagePercentage(messages) {
@@ -137,9 +140,8 @@ export function updateStatCards(stats) {
   );
   if (busiestValue) busiestValue.textContent = stats.busiestDay.count;
   if (busiestLabel && stats.busiestDay.date) {
-    busiestLabel.textContent = `Messages on ${formatDate(
-      stats.busiestDay.date
-    )}`;
+    const dateObj = new Date(stats.busiestDay.date);
+    busiestLabel.textContent = `Messages on ${formatDate(dateObj)}`;
   }
 
   const textValue = document.querySelector(".kpi-card:nth-child(3) .kpi-value");
@@ -158,9 +160,80 @@ export function updateStatCards(stats) {
   if (wordsValue) wordsValue.textContent = Math.round(stats.averageWords);
 }
 
+function getInitials(name) {
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+function getAvatarColor(index) {
+  const colors = ["purple", "blue", "green", "orange", "rose"];
+  return colors[index % colors.length];
+}
+
+export function updateParticipantCards(messages, stats) {
+  const participantsGrid = document.querySelector(".participants-grid");
+  if (!participantsGrid) return;
+
+  participantsGrid.innerHTML = "";
+
+  stats.participantsList.forEach((participant, index) => {
+    const participantMessages = messages.filter(
+      (m) => m.author === participant
+    );
+    const messageCount = participantMessages.length;
+    const percentage = ((messageCount / stats.totalMessages) * 100).toFixed(1);
+    const avgWords = calculateAverageWords(messages, participant);
+
+    const card = document.createElement("div");
+    card.className = "participant-card";
+    card.innerHTML = `
+      <div class="participant-header">
+        <div class="participant-avatar ${getAvatarColor(index)}">${getInitials(
+      participant
+    )}</div>
+        <div class="participant-info">
+          <h3 class="participant-name">${participant}</h3>
+          <p class="participant-meta">${messageCount.toLocaleString()} messages • ${percentage}%</p>
+        </div>
+      </div>
+      <div class="participant-stats">
+        <div class="participant-stat">
+          <span class="participant-stat-label">Avg Length</span>
+          <span class="participant-stat-value">${Math.round(
+            avgWords
+          )} words</span>
+        </div>
+        <div class="participant-stat">
+          <span class="participant-stat-label">Most Active</span>
+          <span class="participant-stat-value">--:--</span>
+        </div>
+        <div class="participant-stat">
+          <span class="participant-stat-label">Sentiment</span>
+          <span class="participant-stat-value positive">--</span>
+        </div>
+      </div>
+      <div class="participant-emojis">
+        <h4 class="participant-emoji-title">Top Emojis</h4>
+        <div class="emoji-list">
+          <div class="emoji-item">
+            <span class="emoji">--</span>
+            <span class="emoji-count">--</span>
+          </div>
+        </div>
+      </div>
+    `;
+    participantsGrid.appendChild(card);
+  });
+}
+
 export function updateDashboard(messages) {
   parsedMessages = messages;
   const stats = calculateStats(messages);
   updateStatCards(stats);
+  updateParticipantCards(messages, stats);
   console.log("Dashboard updated with stats:", stats);
 }
