@@ -58,21 +58,6 @@ function findBusiestDay(messages) {
   return { date: busiestDate, count: maxCount };
 }
 
-function calculateTextMessagePercentage(messages) {
-  if (!messages || messages.length === 0) return { percentage: 0, count: 0 };
-
-  const textMessages = messages.filter(
-    (m) =>
-      m.message &&
-      m.message.trim() !== "" &&
-      !m.message.includes("<Media omitted>")
-  );
-
-  const percentage = Math.round((textMessages.length / messages.length) * 100);
-
-  return { percentage, count: textMessages.length };
-}
-
 function calculateAverageWords(messages, participant = null) {
   if (!messages || messages.length === 0) return 0;
 
@@ -91,6 +76,40 @@ function calculateAverageWords(messages, participant = null) {
   return sum / wordCounts.length;
 }
 
+function getMostActiveHour(messages) {
+  if (!messages || messages.length === 0) return { hour: 0, count: 0 };
+
+  const hourCount = {};
+
+  messages.forEach((m) => {
+    const d = new Date(m.date);
+    const hour = d.getHours();
+    hourCount[hour] = (hourCount[hour] || 0) + 1;
+  });
+
+  let maxCount = 0;
+  let mostActiveHour = 0;
+
+  for (const [hour, count] of Object.entries(hourCount)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mostActiveHour = parseInt(hour);
+    }
+  }
+
+  return { hour: mostActiveHour, count: maxCount };
+}
+
+function formatHourRange(hour) {
+  const nextHour = (hour + 1) % 24;
+  const formatHour = (h) => {
+    const period = h >= 12 ? "PM" : "AM";
+    const displayHour = h % 12 || 12;
+    return `${displayHour}${period}`;
+  };
+  return `${formatHour(hour)}-${formatHour(nextHour)}`;
+}
+
 export function calculateStats(messages) {
   const participants = [...new Set(messages.map((m) => m.author))].filter(
     Boolean
@@ -106,8 +125,8 @@ export function calculateStats(messages) {
     },
     longestStreak: calculateLongestStreak(messages),
     busiestDay: findBusiestDay(messages),
-    textMessageStats: calculateTextMessagePercentage(messages),
-    averageWords: calculateAverageWords(messages, participants[0]),
+    mostActiveHour: getMostActiveHour(messages),
+    averageWords: calculateAverageWords(messages),
   };
 }
 
@@ -144,20 +163,26 @@ export function updateStatCards(stats) {
     busiestLabel.textContent = `Messages on ${formatDate(dateObj)}`;
   }
 
-  const textValue = document.querySelector(".kpi-card:nth-child(3) .kpi-value");
-  const textLabel = document.querySelector(
+  const activeHourValue = document.querySelector(
+    ".kpi-card:nth-child(3) .kpi-value"
+  );
+  const activeHourLabel = document.querySelector(
     ".kpi-card:nth-child(3) .kpi-sublabel"
   );
-  if (textValue)
-    textValue.textContent = `${stats.textMessageStats.percentage}%`;
-  if (textLabel) {
-    textLabel.textContent = `${stats.textMessageStats.count} of ${stats.totalMessages} total`;
+  if (activeHourValue)
+    activeHourValue.textContent = formatHourRange(stats.mostActiveHour.hour);
+  if (activeHourLabel) {
+    activeHourLabel.textContent = `${stats.mostActiveHour.count} messages in this hour`;
   }
 
   const wordsValue = document.querySelector(
     ".kpi-card:nth-child(4) .kpi-value"
   );
+  const wordsLabel = document.querySelector(
+    ".kpi-card:nth-child(4) .kpi-sublabel"
+  );
   if (wordsValue) wordsValue.textContent = Math.round(stats.averageWords);
+  if (wordsLabel) wordsLabel.textContent = "Overall average";
 }
 
 function getInitials(name) {
