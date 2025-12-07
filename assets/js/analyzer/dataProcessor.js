@@ -110,6 +110,126 @@ function formatHourRange(hour) {
   return `${formatHour(hour)}-${formatHour(nextHour)}`;
 }
 
+function calculateDailyAverage(messages) {
+  if (!messages || messages.length === 0) return 0;
+
+  const dates = [
+    ...new Set(
+      messages.map((m) => {
+        const d = new Date(m.date);
+        return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      })
+    ),
+  ];
+
+  return Math.round(messages.length / dates.length);
+}
+
+function calculateResponseSpeed(messages, participant = null) {
+  if (!messages || messages.length < 2)
+    return { minutes: 0, formatted: "0 min" };
+
+  const responseTimes = [];
+
+  for (let i = 1; i < messages.length; i++) {
+    const current = messages[i];
+    const previous = messages[i - 1];
+
+    if (participant) {
+      if (current.author !== participant) continue;
+      if (previous.author === participant) continue;
+    }
+
+    const timeDiff = new Date(current.date) - new Date(previous.date);
+    const minutes = timeDiff / (1000 * 60);
+
+    if (minutes > 0 && minutes < 1440) {
+      responseTimes.push(minutes);
+    }
+  }
+
+  if (responseTimes.length === 0) return { minutes: 0, formatted: "0 min" };
+
+  const avgMinutes =
+    responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+
+  let formatted;
+  if (avgMinutes < 60) {
+    formatted = `${Math.round(avgMinutes)} min`;
+  } else if (avgMinutes < 1440) {
+    formatted = `${(avgMinutes / 60).toFixed(1)} hr`;
+  } else {
+    formatted = `${(avgMinutes / 1440).toFixed(1)} days`;
+  }
+
+  return { minutes: avgMinutes, formatted };
+}
+
+function calculateWeekendActivity(messages, participant) {
+  const participantMessages = messages.filter((m) => m.author === participant);
+
+  if (participantMessages.length === 0)
+    return { percentage: 0, weekendCount: 0, weekdayCount: 0 };
+
+  const weekendMessages = participantMessages.filter((m) => {
+    const date = new Date(m.date);
+    const dayOfWeek = date.getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6;
+  });
+
+  const percentage = Math.round(
+    (weekendMessages.length / participantMessages.length) * 100
+  );
+
+  return {
+    percentage,
+    weekendCount: weekendMessages.length,
+    weekdayCount: participantMessages.length - weekendMessages.length,
+  };
+}
+
+function calculateConversationStarter(messages, participant) {
+  if (!messages || messages.length === 0) return { percentage: 0, started: 0 };
+
+  const participantMessages = messages.filter((m) => m.author === participant);
+  if (participantMessages.length === 0) return { percentage: 0, started: 0 };
+
+  let conversationsStarted = 0;
+  const GAP_THRESHOLD = 3 * 60 * 60 * 1000;
+
+  for (let i = 1; i < messages.length; i++) {
+    const current = messages[i];
+    const previous = messages[i - 1];
+
+    if (current.author !== participant) continue;
+
+    const timeDiff = new Date(current.date) - new Date(previous.date);
+
+    if (timeDiff > GAP_THRESHOLD && previous.author !== participant) {
+      conversationsStarted++;
+    }
+  }
+
+  if (messages[0]?.author === participant) {
+    conversationsStarted++;
+  }
+
+  const totalConversations =
+    conversationsStarted +
+    messages.filter((m, i) => {
+      if (i === 0) return false;
+      const timeDiff = new Date(m.date) - new Date(messages[i - 1].date);
+      return timeDiff > GAP_THRESHOLD && m.author !== participant;
+    }).length;
+
+  const percentage =
+    totalConversations > 0
+      ? Math.round((conversationsStarted / totalConversations) * 100)
+      : 0;
+
+  return { percentage, started: conversationsStarted };
+}
+
 export function calculateStats(messages) {
   const participants = [...new Set(messages.map((m) => m.author))].filter(
     Boolean
@@ -126,6 +246,8 @@ export function calculateStats(messages) {
     longestStreak: calculateLongestStreak(messages),
     busiestDay: findBusiestDay(messages),
     mostActiveHour: getMostActiveHour(messages),
+    dailyAverage: calculateDailyAverage(messages),
+    responseSpeed: calculateResponseSpeed(messages),
     averageWords: calculateAverageWords(messages),
   };
 }
@@ -183,6 +305,17 @@ export function updateStatCards(stats) {
   );
   if (wordsValue) wordsValue.textContent = Math.round(stats.averageWords);
   if (wordsLabel) wordsLabel.textContent = "Overall average";
+
+  const dailyAvgValue = document.querySelector(
+    ".kpi-card:nth-child(5) .kpi-value"
+  );
+  if (dailyAvgValue) dailyAvgValue.textContent = stats.dailyAverage;
+
+  const responseSpeedValue = document.querySelector(
+    ".kpi-card:nth-child(6) .kpi-value"
+  );
+  if (responseSpeedValue)
+    responseSpeedValue.textContent = stats.responseSpeed.formatted;
 }
 
 function getInitials(name) {
@@ -213,6 +346,13 @@ export function updateParticipantCards(messages, stats) {
     const percentage = ((messageCount / stats.totalMessages) * 100).toFixed(1);
     const avgWords = calculateAverageWords(messages, participant);
 
+    const responseSpeed = calculateResponseSpeed(messages, participant);
+    const weekendActivity = calculateWeekendActivity(messages, participant);
+    const conversationStarter = calculateConversationStarter(
+      messages,
+      participant
+    );
+
     const card = document.createElement("div");
     card.className = "participant-card";
     card.innerHTML = `
@@ -239,6 +379,47 @@ export function updateParticipantCards(messages, stats) {
         <div class="participant-stat">
           <span class="participant-stat-label">Sentiment</span>
           <span class="participant-stat-value positive">--</span>
+        </div>
+      </div>
+      <div class="participant-kpis">
+        <div class="participant-kpi-card">
+          <div class="participant-kpi-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 10V3L4 14H11L11 21L20 10L13 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="participant-kpi-content">
+            <span class="participant-kpi-value">${
+              responseSpeed.formatted
+            }</span>
+            <span class="participant-kpi-label">Response Speed</span>
+          </div>
+        </div>
+        <div class="participant-kpi-card">
+          <div class="participant-kpi-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 7V3M16 7V3M7 11H17M5 21H19C20.1046 21 21 20.1046 21 19V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 4 5.89543 4 7V19C4 20.1046 4.89543 21 5 21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="participant-kpi-content">
+            <span class="participant-kpi-value">${
+              weekendActivity.percentage
+            }% Weekend</span>
+            <span class="participant-kpi-label">Activity Split</span>
+          </div>
+        </div>
+        <div class="participant-kpi-card">
+          <div class="participant-kpi-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 12H8.01M12 12H12.01M16 12H16.01M21 12C21 16.4183 16.9706 20 12 20C10.4607 20 9.01172 19.6565 7.74467 19.0511L3 20L4.39499 16.28C3.51156 15.0423 3 13.5743 3 12C3 7.58172 7.02944 4 12 4C16.9706 4 21 7.58172 21 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="participant-kpi-content">
+            <span class="participant-kpi-value">${
+              conversationStarter.percentage
+            }%</span>
+            <span class="participant-kpi-label">Starts Convos</span>
+          </div>
         </div>
       </div>
       <div class="participant-emojis">
