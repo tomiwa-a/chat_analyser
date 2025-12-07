@@ -461,28 +461,9 @@
                 <div class="chart-card word-cloud-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Most Used Words</h3>
-                        <p class="chart-subtitle">Top 20 words (excluding common words)</p>
+                        <p class="chart-subtitle">Frequently mentioned terms</p>
                     </div>
-                    <div class="word-cloud">
-                        <span class="word" style="font-size: 2.5rem; color: #7C3AED;">amazing</span>
-                        <span class="word" style="font-size: 2rem; color: #06B6D4;">work</span>
-                        <span class="word" style="font-size: 1.8rem; color: #10B981;">project</span>
-                        <span class="word" style="font-size: 1.5rem; color: #F43F5E;">meeting</span>
-                        <span class="word" style="font-size: 2.2rem; color: #7C3AED;">great</span>
-                        <span class="word" style="font-size: 1.6rem; color: #06B6D4;">definitely</span>
-                        <span class="word" style="font-size: 1.9rem; color: #10B981;">tomorrow</span>
-                        <span class="word" style="font-size: 1.4rem; color: #F43F5E;">lunch</span>
-                        <span class="word" style="font-size: 2.3rem; color: #7C3AED;">perfect</span>
-                        <span class="word" style="font-size: 1.7rem; color: #06B6D4;">weekend</span>
-                        <span class="word" style="font-size: 1.5rem; color: #10B981;">coffee</span>
-                        <span class="word" style="font-size: 2.1rem; color: #F43F5E;">wonderful</span>
-                        <span class="word" style="font-size: 1.8rem; color: #7C3AED;">tonight</span>
-                        <span class="word" style="font-size: 1.6rem; color: #06B6D4;">excited</span>
-                        <span class="word" style="font-size: 1.9rem; color: #10B981;">awesome</span>
-                        <span class="word" style="font-size: 1.4rem; color: #F43F5E;">planning</span>
-                        <span class="word" style="font-size: 2rem; color: #7C3AED;">perfect</span>
-                        <span class="word" style="font-size: 1.7rem; color: #06B6D4;">thinking</span>
-                    </div>
+                    <canvas id="wordCloud" class="chart-canvas"></canvas>
                 </div>
 
                 <div class="chart-card">
@@ -556,6 +537,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/whatsapp-chat-parser/dist/index.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js"></script>
     <script type="module" src="assets/js/analyzer.js"></script>
 </body>
 </html>

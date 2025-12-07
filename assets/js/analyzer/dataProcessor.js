@@ -230,6 +230,104 @@ function calculateConversationStarter(messages, participant) {
   return { percentage, started: conversationsStarted };
 }
 
+let STOPWORDS = new Set();
+
+async function loadStopwords() {
+  try {
+    const response = await fetch("assets/json/english.json");
+    const words = await response.json();
+    STOPWORDS = new Set([
+      ...words,
+      "omitted",
+      "media",
+      "sticker",
+      "image",
+      "video",
+      "audio",
+      "document",
+    ]);
+  } catch (error) {
+    console.warn("Could not load stopwords, using fallback");
+    STOPWORDS = new Set([
+      "the",
+      "a",
+      "an",
+      "and",
+      "is",
+      "it",
+      "to",
+      "of",
+      "omitted",
+      "media",
+    ]);
+  }
+}
+
+loadStopwords();
+
+function calculateWordFrequency(messages, participant = null) {
+  let filteredMessages = messages;
+  if (participant) {
+    filteredMessages = messages.filter((m) => m.author === participant);
+  }
+
+  const wordCount = {};
+  let totalWords = 0;
+
+  filteredMessages.forEach((m) => {
+    if (!m.message || m.message.includes("<Media omitted>")) return;
+
+    const words = m.message
+      .toLowerCase()
+      .replace(/[^\w\s]/g, " ")
+      .split(/\s+/)
+      .filter((word) => {
+        return word.length > 2 && !STOPWORDS.has(word) && !/^\d+$/.test(word);
+      });
+
+    words.forEach((word) => {
+      wordCount[word] = (wordCount[word] || 0) + 1;
+      totalWords++;
+    });
+  });
+
+  const sortedWords = Object.entries(wordCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 60);
+
+  return {
+    words: sortedWords,
+    totalWords,
+    uniqueWords: Object.keys(wordCount).length,
+  };
+}
+
+export function renderWordCloud(wordData) {
+  const canvas = document.getElementById("wordCloud");
+  if (!canvas || !wordData.words.length) return;
+
+  const colors = ["#7C3AED", "#06B6D4", "#10B981", "#F43F5E", "#F97316"];
+  const canvasWidth = canvas.offsetWidth || 800;
+
+  WordCloud(canvas, {
+    list: wordData.words,
+    gridSize: 16,
+    weightFactor: function (size) {
+      return Math.pow(size, 0.6) * 3;
+    },
+    fontFamily: "Inter, system-ui, sans-serif",
+    color: function (word, weight) {
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    rotateRatio: 0.3,
+    rotationSteps: 2,
+    backgroundColor: "transparent",
+    minSize: 10,
+    drawOutOfBound: false,
+    shrinkToFit: true,
+  });
+}
+
 export function calculateStats(messages) {
   const participants = [...new Set(messages.map((m) => m.author))].filter(
     Boolean
@@ -439,7 +537,12 @@ export function updateParticipantCards(messages, stats) {
 export function updateDashboard(messages) {
   parsedMessages = messages;
   const stats = calculateStats(messages);
+  const wordFreq = calculateWordFrequency(messages);
+
   updateStatCards(stats);
   updateParticipantCards(messages, stats);
+  renderWordCloud(wordFreq);
+
   console.log("Dashboard updated with stats:", stats);
+  console.log("Word frequency:", wordFreq);
 }
