@@ -76,12 +76,17 @@ function calculateAverageWords(messages, participant = null) {
   return sum / wordCounts.length;
 }
 
-function getMostActiveHour(messages) {
+function getMostActiveHour(messages, participant = null) {
   if (!messages || messages.length === 0) return { hour: 0, count: 0 };
+
+  let filteredMessages = messages;
+  if (participant) {
+    filteredMessages = messages.filter((m) => m.author === participant);
+  }
 
   const hourCount = {};
 
-  messages.forEach((m) => {
+  filteredMessages.forEach((m) => {
     const d = new Date(m.date);
     const hour = d.getHours();
     hourCount[hour] = (hourCount[hour] || 0) + 1;
@@ -228,6 +233,31 @@ function calculateConversationStarter(messages, participant) {
       : 0;
 
   return { percentage, started: conversationsStarted };
+}
+
+function extractEmojis(text) {
+  if (!text) return [];
+  const emojiRegex = /(?:\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu;
+  const emojis = text.match(emojiRegex) || [];
+  return emojis;
+}
+
+function getTopEmojis(messages, participant, count = 4) {
+  const emojiCount = {};
+
+  const participantMessages = messages.filter((m) => m.author === participant);
+
+  participantMessages.forEach((msg) => {
+    const emojis = extractEmojis(msg.message || "");
+    emojis.forEach((emoji) => {
+      emojiCount[emoji] = (emojiCount[emoji] || 0) + 1;
+    });
+  });
+
+  return Object.entries(emojiCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count)
+    .map(([emoji, count]) => ({ emoji, count }));
 }
 
 let STOPWORDS = new Set();
@@ -444,15 +474,35 @@ export function updateParticipantCards(messages, stats) {
     const percentage = ((messageCount / stats.totalMessages) * 100).toFixed(1);
     const avgWords = calculateAverageWords(messages, participant);
 
+    const mostActiveHour = getMostActiveHour(messages, participant);
     const responseSpeed = calculateResponseSpeed(messages, participant);
     const weekendActivity = calculateWeekendActivity(messages, participant);
     const conversationStarter = calculateConversationStarter(
       messages,
       participant
     );
+    const topEmojis = getTopEmojis(messages, participant, 4);
 
     const card = document.createElement("div");
     card.className = "participant-card";
+
+    const emojiListHTML =
+      topEmojis.length > 0
+        ? topEmojis
+            .map(
+              ({ emoji, count }) => `
+          <div class="emoji-item">
+            <span class="emoji">${emoji}</span>
+            <span class="emoji-count">${count}</span>
+          </div>
+        `
+            )
+            .join("")
+        : `<div class="emoji-item">
+           <span class="emoji">--</span>
+           <span class="emoji-count">--</span>
+         </div>`;
+
     card.innerHTML = `
       <div class="participant-header">
         <div class="participant-avatar ${getAvatarColor(index)}">${getInitials(
@@ -472,7 +522,9 @@ export function updateParticipantCards(messages, stats) {
         </div>
         <div class="participant-stat">
           <span class="participant-stat-label">Most Active</span>
-          <span class="participant-stat-value">--:--</span>
+          <span class="participant-stat-value">${formatHourRange(
+            mostActiveHour.hour
+          )}</span>
         </div>
         <div class="participant-stat">
           <span class="participant-stat-label">Sentiment</span>
@@ -523,10 +575,7 @@ export function updateParticipantCards(messages, stats) {
       <div class="participant-emojis">
         <h4 class="participant-emoji-title">Top Emojis</h4>
         <div class="emoji-list">
-          <div class="emoji-item">
-            <span class="emoji">--</span>
-            <span class="emoji-count">--</span>
-          </div>
+          ${emojiListHTML}
         </div>
       </div>
     `;
