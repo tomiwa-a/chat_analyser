@@ -2,6 +2,15 @@ import { formatDate } from "./utils.js";
 
 let parsedMessages = null;
 
+export function getParsedMessages() {
+  return parsedMessages;
+}
+
+export function getParticipantsList() {
+  if (!parsedMessages || parsedMessages.length === 0) return [];
+  return [...new Set(parsedMessages.map((m) => m.author))].filter(Boolean);
+}
+
 function calculateLongestStreak(messages) {
   if (!messages || messages.length === 0) return 0;
 

@@ -1,6 +1,12 @@
 import { chartColors } from "./utils.js";
+import {
+  getParsedMessages,
+  getParticipantsList,
+  getActivityOverTime,
+} from "./dataProcessor.js";
 
 let chartInstances = {};
+let modalChartInstance = null;
 
 export function initializeCharts(chartData = {}) {
   Object.values(chartInstances).forEach((chart) => {
@@ -397,4 +403,327 @@ export function initializeCharts(chartData = {}) {
       },
     });
   }
+}
+
+const PARTICIPANT_COLORS = [
+  "#6366F1",
+  "#06B6D4",
+  "#10B981",
+  "#F97316",
+  "#F43F5E",
+];
+
+export function initializeActivityZoom() {
+  const zoomBtn = document.getElementById("activityZoomBtn");
+  const modal = document.getElementById("activityChartModal");
+  const closeBtn = document.getElementById("closeActivityModal");
+  const backdrop = modal?.querySelector(".modal-backdrop");
+  const applyFiltersBtn = document.getElementById("applyFilters");
+  const resetFiltersBtn = document.getElementById("resetFilters");
+
+  if (!zoomBtn || !modal) return;
+
+  zoomBtn.addEventListener("click", () => {
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+    initializeModalFilters();
+    renderModalChart();
+  });
+
+  const closeModal = () => {
+    modal.classList.remove("active");
+    document.body.style.overflow = "";
+  };
+
+  closeBtn?.addEventListener("click", closeModal);
+  backdrop?.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      closeModal();
+    }
+  });
+
+  applyFiltersBtn?.addEventListener("click", applyDateFilters);
+  resetFiltersBtn?.addEventListener("click", resetFilters);
+}
+
+function initializeModalFilters() {
+  const messages = getParsedMessages();
+
+  if (messages && messages.length > 0) {
+    const dates = messages.map((m) => new Date(m.date));
+    const maxDate = new Date(Math.max(...dates));
+    const minDate = new Date(maxDate);
+    minDate.setDate(minDate.getDate() - 90);
+
+    const absoluteMinDate = new Date(Math.min(...dates));
+
+    const dateFrom = document.getElementById("dateFrom");
+    const dateTo = document.getElementById("dateTo");
+
+    if (dateFrom && dateTo) {
+      const defaultFromStr = minDate.toISOString().split("T")[0];
+      const maxDateStr = maxDate.toISOString().split("T")[0];
+      const absoluteMinStr = absoluteMinDate.toISOString().split("T")[0];
+
+      dateFrom.value = defaultFromStr;
+      dateTo.value = maxDateStr;
+      dateFrom.min = absoluteMinStr;
+      dateFrom.max = maxDateStr;
+      dateTo.min = absoluteMinStr;
+      dateTo.max = maxDateStr;
+    }
+
+    const participants = getParticipantsList();
+    const modal = document.getElementById("activityChartModal");
+    const individualContainer = modal?.querySelector(
+      ".individual-participants"
+    );
+
+    if (individualContainer && participants.length > 0) {
+      individualContainer.innerHTML = participants
+        .map(
+          (p, index) => `
+        <label class="checkbox-label">
+          <input type="checkbox" class="participant-checkbox" value="${p}" data-index="${index}">
+          <span class="checkbox-custom"></span>
+          <span class="participant-name">${p}</span>
+        </label>
+      `
+        )
+        .join("");
+
+      setupParticipantListeners();
+    }
+  }
+}
+
+function setupParticipantListeners() {
+  const allCheckbox = document.getElementById("allParticipants");
+  const individualCheckboxes = document.querySelectorAll(
+    ".participant-checkbox"
+  );
+
+  allCheckbox?.addEventListener("change", () => {
+    if (allCheckbox.checked) {
+      individualCheckboxes.forEach((cb) => (cb.checked = false));
+      updateChartFromCheckboxes();
+    }
+  });
+
+  individualCheckboxes.forEach((cb) => {
+    cb.addEventListener("change", () => {
+      if (cb.checked) {
+        allCheckbox.checked = false;
+      }
+
+      const anyChecked = Array.from(individualCheckboxes).some(
+        (checkbox) => checkbox.checked
+      );
+      if (!anyChecked) {
+        allCheckbox.checked = true;
+      }
+
+      updateChartFromCheckboxes();
+    });
+  });
+}
+
+function updateChartFromCheckboxes() {
+  const messages = getParsedMessages();
+  if (!messages || messages.length === 0) return;
+
+  const dateFromInput = document.getElementById("dateFrom");
+  const dateToInput = document.getElementById("dateTo");
+
+  if (!dateFromInput?.value || !dateToInput?.value) return;
+
+  const dateFrom = new Date(dateFromInput.value);
+  const dateTo = new Date(dateToInput.value);
+  dateTo.setHours(23, 59, 59, 999);
+
+  const allCheckbox = document.getElementById("allParticipants");
+  const individualCheckboxes = Array.from(
+    document.querySelectorAll(".participant-checkbox:checked")
+  );
+
+  const daysDiff = Math.ceil((dateTo - dateFrom) / (1000 * 60 * 60 * 24)) + 1;
+
+  if (allCheckbox.checked) {
+    const filteredMessages = messages.filter((m) => {
+      const msgDate = new Date(m.date);
+      return msgDate >= dateFrom && msgDate <= dateTo;
+    });
+
+    const chartData = getActivityOverTimeCustom(
+      filteredMessages,
+      dateFrom,
+      daysDiff
+    );
+    updateModalChartSingle(chartData);
+  } else if (individualCheckboxes.length > 0) {
+    const datasets = individualCheckboxes.map((cb) => {
+      const participant = cb.value;
+      const participantMessages = messages.filter((m) => {
+        const msgDate = new Date(m.date);
+        const dateMatch = msgDate >= dateFrom && msgDate <= dateTo;
+        const participantMatch = m.author === participant;
+        return dateMatch && participantMatch;
+      });
+
+      const colorIndex = parseInt(cb.dataset.index);
+      const chartData = getActivityOverTimeCustom(
+        participantMessages,
+        dateFrom,
+        daysDiff
+      );
+
+      return {
+        label: participant,
+        data: chartData.data,
+        borderColor: PARTICIPANT_COLORS[colorIndex % PARTICIPANT_COLORS.length],
+        backgroundColor: `${
+          PARTICIPANT_COLORS[colorIndex % PARTICIPANT_COLORS.length]
+        }20`,
+        fill: true,
+        tension: 0.4,
+        borderWidth: 3,
+      };
+    });
+
+    const firstData = getActivityOverTimeCustom([], dateFrom, daysDiff);
+    updateModalChartMultiple(firstData.labels, datasets);
+  }
+}
+
+function applyDateFilters() {
+  updateChartFromCheckboxes();
+}
+
+function resetFilters() {
+  const allCheckbox = document.getElementById("allParticipants");
+  const individualCheckboxes = document.querySelectorAll(
+    ".participant-checkbox"
+  );
+
+  allCheckbox.checked = true;
+  individualCheckboxes.forEach((cb) => (cb.checked = false));
+
+  initializeModalFilters();
+  renderModalChart();
+}
+
+function getActivityOverTimeCustom(messages, startDate, days) {
+  const dateCount = {};
+
+  messages.forEach((m) => {
+    const msgDate = new Date(m.date);
+    const dateKey = msgDate.toISOString().split("T")[0];
+    dateCount[dateKey] = (dateCount[dateKey] || 0) + 1;
+  });
+
+  const labels = [];
+  const data = [];
+
+  for (let i = 0; i < days; i++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+    const dateKey = date.toISOString().split("T")[0];
+
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+    const day = date.getDate();
+    labels.push(`${month} ${day}`);
+    data.push(dateCount[dateKey] || 0);
+  }
+
+  return { labels, data };
+}
+
+function updateModalChartSingle(chartData) {
+  if (modalChartInstance) {
+    modalChartInstance.data.labels = chartData.labels;
+    modalChartInstance.data.datasets = [
+      {
+        label: "All Participants",
+        data: chartData.data,
+        borderColor: "#7C3AED",
+        backgroundColor: "rgba(124, 58, 237, 0.2)",
+        fill: true,
+        tension: 0.4,
+        borderWidth: 3,
+      },
+    ];
+    modalChartInstance.options.plugins.legend.display = false;
+    modalChartInstance.update();
+  }
+}
+
+function updateModalChartMultiple(labels, datasets) {
+  if (modalChartInstance) {
+    modalChartInstance.data.labels = labels;
+    modalChartInstance.data.datasets = datasets;
+    modalChartInstance.options.plugins.legend.display = true;
+    modalChartInstance.update();
+  }
+}
+
+function renderModalChart() {
+  const canvas = document.getElementById("activityChartModal-canvas");
+  if (!canvas) return;
+
+  const messages = getParsedMessages();
+  let chartData;
+
+  if (messages && messages.length > 0) {
+    chartData = getActivityOverTime(messages, 90);
+  } else {
+    chartData = {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+      data: [320, 410, 380, 450, 420, 380, 460, 490],
+    };
+  }
+
+  if (modalChartInstance) {
+    modalChartInstance.destroy();
+  }
+
+  modalChartInstance = new Chart(canvas, {
+    type: "line",
+    data: {
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: "All Participants",
+          data: chartData.data,
+          borderColor: "#7C3AED",
+          backgroundColor: "rgba(124, 58, 237, 0.2)",
+          fill: true,
+          tension: 0.4,
+          borderWidth: 3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+          position: "top",
+          labels: {
+            boxWidth: 12,
+            padding: 15,
+            font: {
+              size: 12,
+            },
+          },
+        },
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+        x: { grid: { display: false } },
+      },
+    },
+  });
 }
