@@ -271,11 +271,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Activity Over Time</h3>
-                        <select class="chart-select">
-                            <option>Last 30 Days</option>
-                            <option>Last 90 Days</option>
-                            <option>All Time</option>
-                        </select>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="activityZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="activityChart" class="chart-canvas"></canvas>
                 </div>
@@ -283,7 +286,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Hourly Activity Heatmap</h3>
-                        <p class="chart-subtitle">Messages by hour of day</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="hourlyZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="hourlyChart" class="chart-canvas"></canvas>
                 </div>
@@ -531,6 +541,118 @@
                             Export as PDF
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-modal" id="activityChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Activity Over Time - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeActivityModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="dateFrom" class="input-label">From</label>
+                                <input type="date" id="dateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="dateTo" class="input-label">To</label>
+                                <input type="date" id="dateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="allParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetFilters">
+                            Reset Filters
+                        </button>
+                        <button class="btn-primary filter-apply-btn" id="applyFilters">
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="activityChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hourly Activity Zoom Modal -->
+        <div class="chart-modal" id="hourlyChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Hourly Activity - Detailed View</h2>
+                    <button class="modal-close" id="closeHourlyModal" aria-label="Close modal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="hourlyDateFrom" class="input-label">From</label>
+                                <input type="date" id="hourlyDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="hourlyDateTo" class="input-label">To</label>
+                                <input type="date" id="hourlyDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="hourlyAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-hourly">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetHourlyFilters">
+                            Reset Filters
+                        </button>
+                        <button class="btn-primary filter-apply-btn" id="applyHourlyFilters">
+                            Apply Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container hourly-charts-container" id="hourlyChartsContainer">
                 </div>
             </div>
         </div>
