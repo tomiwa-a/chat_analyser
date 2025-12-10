@@ -3,6 +3,7 @@ import {
   initializeActivityZoom,
   initializeHourlyZoom,
 } from "./analyzer/chartRenderer.js";
+import { preloadModel } from "./analyzer/sentimentAnalyzer.js";
 
 function initializeConsentModal() {
   const unlockBtn = document.getElementById("unlockInsightsBtn");
@@ -42,4 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeActivityZoom();
   initializeHourlyZoom();
   initializeConsentModal();
+
+  preloadModel();
 });
