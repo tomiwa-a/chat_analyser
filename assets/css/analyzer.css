@@ -344,6 +344,28 @@
   color: var(--color-accent);
 }
 
+.participant-stat-value .positive {
+  color: var(--color-accent);
+}
+
+.participant-stat-value .negative {
+  color: #EF4444;
+}
+
+.participant-stat-value .neutral {
+  color: var(--color-text-muted);
+}
+
+.sentiment-loading {
+  color: var(--color-primary);
+  animation: sentimentPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes sentimentPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 .participant-kpis {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

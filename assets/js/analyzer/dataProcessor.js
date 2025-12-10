@@ -577,6 +577,7 @@ export function updateParticipantCards(messages, stats) {
 
     const card = document.createElement("div");
     card.className = "participant-card";
+    card.dataset.participant = participant;
 
     const emojiListHTML =
       topEmojis.length > 0
@@ -594,6 +595,8 @@ export function updateParticipantCards(messages, stats) {
            <span class="emoji">--</span>
            <span class="emoji-count">--</span>
          </div>`;
+
+    const participantId = participant.replace(/[^a-zA-Z0-9]/g, "_");
 
     card.innerHTML = `
       <div class="participant-header">
@@ -620,7 +623,9 @@ export function updateParticipantCards(messages, stats) {
         </div>
         <div class="participant-stat">
           <span class="participant-stat-label">Sentiment</span>
-          <span class="participant-stat-value positive">--</span>
+          <span class="participant-stat-value sentiment-value" id="sentiment-${participantId}">
+            <span class="sentiment-loading">Analyzing...</span>
+          </span>
         </div>
       </div>
       <div class="participant-kpis">
@@ -673,6 +678,35 @@ export function updateParticipantCards(messages, stats) {
     `;
     participantsGrid.appendChild(card);
   });
+
+  triggerSentimentAnalysis(messages, stats.participantsList);
+}
+
+async function triggerSentimentAnalysis(messages, participants) {
+  const { getParticipantSentiment } = await import("./sentimentAnalyzer.js");
+
+  for (const participant of participants) {
+    const participantId = participant.replace(/[^a-zA-Z0-9]/g, "_");
+    const sentimentEl = document.getElementById(`sentiment-${participantId}`);
+
+    if (!sentimentEl) continue;
+
+    try {
+      const result = await getParticipantSentiment(
+        messages,
+        participant,
+        (progress) => {
+          sentimentEl.innerHTML = `<span class="sentiment-loading">${progress.percentage}%</span>`;
+        }
+      );
+
+      const colorClass = result.label === "positive" ? "positive" : "negative";
+      sentimentEl.innerHTML = `<span class="${colorClass}">${result.percentage}</span>`;
+    } catch (error) {
+      console.error(`Sentiment analysis failed for ${participant}:`, error);
+      sentimentEl.innerHTML = `<span class="neutral">--</span>`;
+    }
+  }
 }
 
 export function updateDashboard(messages) {
