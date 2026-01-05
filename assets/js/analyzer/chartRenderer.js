@@ -72,62 +72,15 @@ export function initializeCharts(chartData = {}) {
     });
   }
 
-  const sentimentCtx = document.getElementById("sentimentChart");
-  if (sentimentCtx) {
-    new Chart(sentimentCtx, {
-      type: "line",
-      data: {
-        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-        datasets: [
-          {
-            label: "Positive",
-            data: [72, 78, 75, 82],
-            borderColor: chartColors.accent,
-            backgroundColor: `${chartColors.accent}20`,
-            fill: true,
-            tension: 0.4,
-          },
-          {
-            label: "Neutral",
-            data: [20, 15, 18, 12],
-            borderColor: chartColors.orange,
-            backgroundColor: `${chartColors.orange}20`,
-            fill: true,
-            tension: 0.4,
-          },
-          {
-            label: "Negative",
-            data: [8, 7, 7, 6],
-            borderColor: chartColors.rose,
-            backgroundColor: `${chartColors.rose}20`,
-            fill: true,
-            tension: 0.4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 12, padding: 15 } },
-        },
-        scales: {
-          y: { beginAtZero: true, max: 100, grid: { color: "#E4E4E7" } },
-          x: { grid: { display: false } },
-        },
-      },
-    });
-  }
-
   const lengthCtx = document.getElementById("lengthChart");
-  if (lengthCtx) {
-    new Chart(lengthCtx, {
+  if (lengthCtx && chartData.messageLengthDistribution) {
+    chartInstances.length = new Chart(lengthCtx, {
       type: "doughnut",
       data: {
-        labels: ["< 10 words", "10-30 words", "30-50 words", "> 50 words"],
+        labels: chartData.messageLengthDistribution.labels,
         datasets: [
           {
-            data: [340, 1205, 780, 222],
+            data: chartData.messageLengthDistribution.data,
             backgroundColor: [
               chartColors.primary,
               chartColors.secondary,
@@ -149,16 +102,18 @@ export function initializeCharts(chartData = {}) {
   }
 
   const responseCtx = document.getElementById("responseChart");
-  if (responseCtx) {
-    new Chart(responseCtx, {
+  if (responseCtx && chartData.responseTimeByParticipant) {
+    chartInstances.response = new Chart(responseCtx, {
       type: "bar",
       data: {
-        labels: ["John", "Jane"],
+        labels: chartData.responseTimeByParticipant.labels,
         datasets: [
           {
             label: "Avg Response (minutes)",
-            data: [3.2, 4.5],
-            backgroundColor: [chartColors.primary, chartColors.secondary],
+            data: chartData.responseTimeByParticipant.data,
+            backgroundColor: chartData.responseTimeByParticipant.labels.map((_, i) => 
+              [chartColors.primary, chartColors.secondary, chartColors.accent, chartColors.orange, chartColors.rose][i % 5]
+            ),
             borderRadius: 8,
             barThickness: 60,
           },
@@ -177,15 +132,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const weeklyCtx = document.getElementById("weeklyChart");
-  if (weeklyCtx) {
-    new Chart(weeklyCtx, {
+  if (weeklyCtx && chartData.weeklyPattern) {
+    chartInstances.weekly = new Chart(weeklyCtx, {
       type: "radar",
       data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        labels: chartData.weeklyPattern.labels,
         datasets: [
           {
             label: "Messages",
-            data: [320, 410, 380, 450, 420, 280, 190],
+            data: chartData.weeklyPattern.data,
             borderColor: chartColors.primary,
             backgroundColor: `${chartColors.primary}20`,
             borderWidth: 2,
@@ -204,6 +159,9 @@ export function initializeCharts(chartData = {}) {
             beginAtZero: true,
             grid: { color: "#E4E4E7" },
             angleLines: { color: "#E4E4E7" },
+            ticks: {
+              display: false
+            },
           },
         },
       },
@@ -241,20 +199,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const peakTimesCtx = document.getElementById("peakTimesChart");
-  if (peakTimesCtx) {
-    new Chart(peakTimesCtx, {
+  if (peakTimesCtx && chartData.peakTimes) {
+    chartInstances.peakTimes = new Chart(peakTimesCtx, {
       type: "bar",
       data: {
-        labels: [
-          "Morning\n(6-12)",
-          "Afternoon\n(12-18)",
-          "Evening\n(18-24)",
-          "Night\n(0-6)",
-        ],
+        labels: chartData.peakTimes.labels,
         datasets: [
           {
             label: "Messages",
-            data: [420, 680, 1240, 207],
+            data: chartData.peakTimes.data,
             backgroundColor: [
               chartColors.orange,
               chartColors.secondary,
@@ -277,57 +230,16 @@ export function initializeCharts(chartData = {}) {
     });
   }
 
-  const emotionCtx = document.getElementById("emotionChart");
-  if (emotionCtx) {
-    new Chart(emotionCtx, {
-      type: "doughnut",
-      data: {
-        labels: ["Happy", "Excited", "Neutral", "Sad", "Angry"],
-        datasets: [
-          {
-            data: [920, 680, 560, 250, 137],
-            backgroundColor: [
-              chartColors.accent,
-              chartColors.orange,
-              chartColors.secondary,
-              chartColors.blue,
-              chartColors.rose,
-            ],
-            borderWidth: 0,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 12, padding: 10 } },
-        },
-      },
-    });
-  }
-
   const busiestDaysCtx = document.getElementById("busiestDaysChart");
-  if (busiestDaysCtx) {
-    new Chart(busiestDaysCtx, {
+  if (busiestDaysCtx && chartData.busiestDays) {
+    chartInstances.busiestDays = new Chart(busiestDaysCtx, {
       type: "bar",
       data: {
-        labels: [
-          "Jan 15",
-          "Feb 3",
-          "Mar 22",
-          "Apr 8",
-          "May 12",
-          "Jun 5",
-          "Jul 18",
-          "Aug 9",
-          "Sep 14",
-          "Oct 2",
-        ],
+        labels: chartData.busiestDays.labels,
         datasets: [
           {
             label: "Messages",
-            data: [89, 84, 78, 76, 73, 71, 69, 67, 65, 63],
+            data: chartData.busiestDays.data,
             backgroundColor: chartColors.primary,
             borderRadius: 6,
           },
@@ -346,15 +258,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const avgDailyCtx = document.getElementById("avgDailyChart");
-  if (avgDailyCtx) {
-    new Chart(avgDailyCtx, {
+  if (avgDailyCtx && chartData.averageDailyMessages) {
+    chartInstances.avgDaily = new Chart(avgDailyCtx, {
       type: "line",
       data: {
-        labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+        labels: chartData.averageDailyMessages.labels,
         datasets: [
           {
             label: "Avg Messages/Day",
-            data: [35, 42, 38, 45, 40, 37],
+            data: chartData.averageDailyMessages.data,
             borderColor: chartColors.secondary,
             backgroundColor: `${chartColors.secondary}30`,
             fill: true,
@@ -378,15 +290,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const weekendCtx = document.getElementById("weekendChart");
-  if (weekendCtx) {
-    new Chart(weekendCtx, {
+  if (weekendCtx && chartData.weekendVsWeekday) {
+    chartInstances.weekend = new Chart(weekendCtx, {
       type: "bar",
       data: {
-        labels: ["Weekday", "Weekend"],
+        labels: chartData.weekendVsWeekday.labels,
         datasets: [
           {
             label: "Total Messages",
-            data: [1820, 727],
+            data: chartData.weekendVsWeekday.data,
             backgroundColor: [chartColors.primary, chartColors.accent],
             borderRadius: 8,
             barThickness: 100,

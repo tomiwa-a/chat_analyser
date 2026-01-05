@@ -3,6 +3,12 @@
   min-height: 100vh;
 }
 
+/* Hide chart cards by default until data is loaded */
+.chart-grid-2 .chart-card,
+.chart-grid-3 .chart-card {
+  display: none;
+}
+
 .upload-section {
   margin: 2rem 0 1rem;
 }

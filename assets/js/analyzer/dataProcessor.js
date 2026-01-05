@@ -424,6 +424,87 @@ export function getMonthlyActivity(messages) {
   return { labels, data };
 }
 
+// Get response time data for each participant
+export function getResponseTimeByParticipant(messages) {
+  const participants = getParticipantsList();
+  const labels = [];
+  const data = [];
+  
+  participants.forEach(participant => {
+    const responseSpeed = calculateResponseSpeed(messages, participant);
+    // Use only first name (first word) for better display
+    const firstName = participant.split(' ')[0];
+    labels.push(firstName);
+    data.push(responseSpeed.minutes);
+  });
+  
+  return { labels, data };
+}
+
+// Get message length distribution
+export function getMessageLengthDistribution(messages) {
+  const buckets = {
+    short: 0,      // < 10 words
+    medium: 0,     // 10-30 words
+    long: 0,       // 30-50 words
+    veryLong: 0    // > 50 words
+  };
+  
+  messages.forEach(m => {
+    if (!m.message || m.message.trim() === '') return;
+    const wordCount = m.message.trim().split(/\s+/).length;
+    
+    if (wordCount < 10) buckets.short++;
+    else if (wordCount < 30) buckets.medium++;
+    else if (wordCount < 50) buckets.long++;
+    else buckets.veryLong++;
+  });
+  
+  return {
+    labels: ['< 10 words', '10-30 words', '30-50 words', '> 50 words'],
+    data: [buckets.short, buckets.medium, buckets.long, buckets.veryLong]
+  };
+}
+
+// Get weekly pattern (day of week distribution)
+export function getWeeklyPattern(messages) {
+  const dayCount = new Array(7).fill(0);
+  
+  messages.forEach(m => {
+    const day = new Date(m.date).getDay();
+    dayCount[day]++;
+  });
+  
+  return {
+    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    data: dayCount
+  };
+}
+
+// Get busiest days (top 10)
+export function getBusiestDays(messages, count = 10) {
+  const dateCount = {};
+  
+  messages.forEach(m => {
+    const d = new Date(m.date);
+    const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    dateCount[dateKey] = (dateCount[dateKey] || 0) + 1;
+  });
+  
+  const sorted = Object.entries(dateCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, count);
+  
+  const labels = sorted.map(([date]) => {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+  
+  const data = sorted.map(([, count]) => count);
+  
+  return { labels, data };
+}
+
 export function renderWordCloud(wordData) {
   const canvas = document.getElementById("wordCloud");
   if (!canvas || !wordData.words.length) return;
@@ -448,6 +529,201 @@ export function renderWordCloud(wordData) {
     drawOutOfBound: false,
     shrinkToFit: true,
   });
+}
+
+// Get average daily messages over time (by week)
+export function getAverageDailyMessages(messages) {
+  if (!messages || messages.length === 0) return { labels: [], data: [] };
+  
+  const dates = messages.map(m => new Date(m.date));
+  const minDate = new Date(Math.min(...dates));
+  const maxDate = new Date(Math.max(...dates));
+  
+  // Group by week
+  const weekData = {};
+  
+  messages.forEach(m => {
+    const msgDate = new Date(m.date);
+    const weekStart = new Date(msgDate);
+    weekStart.setDate(msgDate.getDate() - msgDate.getDay());
+    const weekKey = weekStart.toISOString().split('T')[0];
+    
+    if (!weekData[weekKey]) {
+      weekData[weekKey] = { count: 0, days: new Set() };
+    }
+    
+    weekData[weekKey].count++;
+    weekData[weekKey].days.add(msgDate.toISOString().split('T')[0]);
+  });
+  
+  const sortedWeeks = Object.keys(weekData).sort();
+  const labels = sortedWeeks.map((key, i) => `Week ${i + 1}`);
+  const data = sortedWeeks.map(key => {
+    const daysInWeek = weekData[key].days.size;
+    return Math.round(weekData[key].count / daysInWeek);
+  });
+  
+  return { labels: labels.slice(-6), data: data.slice(-6) };
+}
+
+// Get weekend vs weekday data
+export function getWeekendVsWeekday(messages) {
+  let weekdayCount = 0;
+  let weekendCount = 0;
+  
+  messages.forEach(m => {
+    const day = new Date(m.date).getDay();
+    if (day === 0 || day === 6) {
+      weekendCount++;
+    } else {
+      weekdayCount++;
+    }
+  });
+  
+  return {
+    labels: ['Weekday', 'Weekend'],
+    data: [weekdayCount, weekendCount]
+  };
+}
+
+// Get peak times (time of day buckets)
+export function getPeakTimes(messages) {
+  const timeBuckets = {
+    morning: 0,    // 6-12
+    afternoon: 0,  // 12-18
+    evening: 0,    // 18-24
+    night: 0       // 0-6
+  };
+  
+  messages.forEach(m => {
+    const hour = new Date(m.date).getHours();
+    if (hour >= 6 && hour < 12) timeBuckets.morning++;
+    else if (hour >= 12 && hour < 18) timeBuckets.afternoon++;
+    else if (hour >= 18) timeBuckets.evening++;
+    else timeBuckets.night++;
+  });
+  
+  return {
+    labels: ['Morning\n(6-12)', 'Afternoon\n(12-18)', 'Evening\n(18-24)', 'Night\n(0-6)'],
+    data: [timeBuckets.morning, timeBuckets.afternoon, timeBuckets.evening, timeBuckets.night]
+  };
+}
+
+// Get conversation snippets (sample exchanges)
+export function getConversationSnippets(messages, count = 1) {
+  if (!messages || messages.length < 4) return [];
+  
+  const snippets = [];
+  const participants = getParticipantsList();
+  
+  if (participants.length < 2) return [];
+  
+  // Find exchanges where participants alternate
+  for (let i = 0; i < messages.length - 3 && snippets.length < count; i++) {
+    const exchange = messages.slice(i, i + 4);
+    
+    // Check if it's a good exchange (alternating participants)
+    const authors = exchange.map(m => m.author);
+    const hasExchange = authors[0] !== authors[1] || authors[2] !== authors[3];
+    
+    if (hasExchange && exchange.every(m => m.message && !m.message.includes('<Media omitted>'))) {
+      snippets.push(exchange);
+    }
+  }
+  
+  return snippets;
+}
+
+// Update conversation snippets display
+function updateConversationSnippets(snippets) {
+  const container = document.querySelector('.chat-briefs-section');
+  if (!container || snippets.length === 0) return;
+  
+  const participants = getParticipantsList();
+  
+  container.innerHTML = snippets.map(exchange => {
+    const messagesHTML = exchange.map(msg => {
+      const isFirstParticipant = msg.author === participants[0];
+      const time = new Date(msg.date).toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit' 
+      });
+      
+      return `
+        <div class="chat-message ${isFirstParticipant ? 'sent' : 'received'}">
+          <div class="message-bubble">
+            <p>${msg.message}</p>
+            <span class="message-time">${time}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    return `
+      <div class="chat-brief-card compact">
+        <div class="chat-messages">
+          ${messagesHTML}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Export data as JSON
+export function exportAsJSON(messages, stats) {
+  const exportData = {
+    exportDate: new Date().toISOString(),
+    statistics: stats,
+    messages: messages.map(m => ({
+      date: m.date,
+      author: m.author,
+      message: m.message
+    })),
+    charts: {
+      activityOverTime: getActivityOverTime(messages, 30),
+      hourlyActivity: getHourlyActivity(messages),
+      monthlyActivity: getMonthlyActivity(messages),
+      weeklyPattern: getWeeklyPattern(messages),
+      peakTimes: getPeakTimes(messages),
+      weekendVsWeekday: getWeekendVsWeekday(messages)
+    }
+  };
+  
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `chat-analysis-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Setup export button handlers
+function setupExportButtons(messages, stats) {
+  const jsonBtn = document.querySelector('.export-buttons .btn-primary');
+  const pdfBtn = document.querySelector('.export-buttons .btn-secondary');
+  
+  if (jsonBtn) {
+    // Remove old listeners
+    const newJsonBtn = jsonBtn.cloneNode(true);
+    jsonBtn.parentNode.replaceChild(newJsonBtn, jsonBtn);
+    
+    newJsonBtn.addEventListener('click', () => {
+      exportAsJSON(messages, stats);
+    });
+  }
+  
+  if (pdfBtn) {
+    // Remove old listeners
+    const newPdfBtn = pdfBtn.cloneNode(true);
+    pdfBtn.parentNode.replaceChild(newPdfBtn, pdfBtn);
+    
+    newPdfBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
 }
 
 export function calculateStats(messages) {
@@ -684,17 +960,35 @@ export function updateDashboard(messages) {
     activityOverTime: getActivityOverTime(messages, 30),
     hourlyActivity: getHourlyActivity(messages),
     monthlyActivity: getMonthlyActivity(messages),
+    responseTimeByParticipant: getResponseTimeByParticipant(messages),
+    messageLengthDistribution: getMessageLengthDistribution(messages),
+    weeklyPattern: getWeeklyPattern(messages),
+    busiestDays: getBusiestDays(messages),
+    averageDailyMessages: getAverageDailyMessages(messages),
+    weekendVsWeekday: getWeekendVsWeekday(messages),
+    peakTimes: getPeakTimes(messages),
+    conversationSnippets: getConversationSnippets(messages)
   };
 
   updateStatCards(stats);
   updateParticipantCards(messages, stats);
   renderWordCloud(wordFreq);
+  
+  // Show chart cards
+  document.querySelectorAll('.chart-card').forEach(card => {
+    card.style.display = 'block';
+  });
+  
+  // Update conversation snippets section
+  updateConversationSnippets(chartData.conversationSnippets);
+  
+  // Setup export buttons
+  setupExportButtons(messages, stats);
 
   import("./chartRenderer.js").then((module) => {
     module.initializeCharts(chartData);
   });
 
   console.log("Dashboard updated with stats:", stats);
-  console.log("Word frequency:", wordFreq);
   console.log("Chart data:", chartData);
 }
