@@ -303,7 +303,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Monthly Activity</h3>
-                        <p class="chart-subtitle">Messages per month</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="monthlyZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="monthlyChart" class="chart-canvas"></canvas>
                 </div>
@@ -311,7 +318,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Peak Activity Times</h3>
-                        <p class="chart-subtitle">Most active hours</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="peakTimesZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="peakTimesChart" class="chart-canvas"></canvas>
                 </div>
@@ -419,7 +433,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Busiest Days</h3>
-                        <p class="chart-subtitle">Top 10 most active dates</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="busiestDaysZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="busiestDaysChart" class="chart-canvas"></canvas>
                 </div>
@@ -427,7 +448,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Average Daily Messages</h3>
-                        <p class="chart-subtitle">Messages per day over time</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="avgDailyZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="avgDailyChart" class="chart-canvas"></canvas>
                 </div>
@@ -435,7 +463,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Weekend vs Weekday</h3>
-                        <p class="chart-subtitle">Activity comparison</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="weekendZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="weekendChart" class="chart-canvas"></canvas>
                 </div>
@@ -453,7 +488,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Message Length Distribution</h3>
-                        <p class="chart-subtitle">Words per message</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="lengthZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="lengthChart" class="chart-canvas"></canvas>
                 </div>
@@ -461,7 +503,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Response Time</h3>
-                        <p class="chart-subtitle">Average reply speed</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="responseZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="responseChart" class="chart-canvas"></canvas>
                 </div>
@@ -471,7 +520,14 @@
                 <div class="chart-card word-cloud-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Most Used Words</h3>
-                        <p class="chart-subtitle">Frequently mentioned terms</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="wordCloudZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="wordCloud" class="chart-canvas"></canvas>
                 </div>
@@ -479,7 +535,14 @@
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3 class="chart-title">Weekly Pattern</h3>
-                        <p class="chart-subtitle">Messages by day of week</p>
+                        <div class="chart-controls">
+                            <button class="chart-zoom-btn" id="weeklyZoomBtn" aria-label="Zoom chart">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <canvas id="weeklyChart" class="chart-canvas"></canvas>
                 </div>
@@ -653,6 +716,519 @@
                 </div>
                 
                 <div class="modal-chart-container hourly-charts-container" id="hourlyChartsContainer">
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Activity Modal -->
+        <div class="chart-modal" id="monthlyChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Monthly Activity - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeMonthlyModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="monthlyDateFrom" class="input-label">From</label>
+                                <input type="month" id="monthlyDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="monthlyDateTo" class="input-label">To</label>
+                                <input type="month" id="monthlyDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="monthlyAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-monthly"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetMonthlyFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyMonthlyFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="monthlyChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Peak Times Modal -->
+        <div class="chart-modal" id="peakTimesChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Peak Activity Times - Detailed View</h2>
+                    <button class="modal-close-btn" id="closePeakTimesModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="peakTimesDateFrom" class="input-label">From</label>
+                                <input type="date" id="peakTimesDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="peakTimesDateTo" class="input-label">To</label>
+                                <input type="date" id="peakTimesDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="peakTimesAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-peakTimes"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Chart Type</label>
+                        <select id="peakTimesChartType" class="filter-select">
+                            <option value="bar">Bar Chart</option>
+                            <option value="doughnut">Doughnut Chart</option>
+                            <option value="stacked">Stacked Bar</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetPeakTimesFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyPeakTimesFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="peakTimesChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Length Modal -->
+        <div class="chart-modal" id="lengthChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Message Length Distribution - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeLengthModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="lengthDateFrom" class="input-label">From</label>
+                                <input type="date" id="lengthDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="lengthDateTo" class="input-label">To</label>
+                                <input type="date" id="lengthDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="lengthAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-length"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetLengthFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyLengthFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="lengthChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Time Modal -->
+        <div class="chart-modal" id="responseChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Response Time - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeResponseModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="responseDateFrom" class="input-label">From</label>
+                                <input type="date" id="responseDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="responseDateTo" class="input-label">To</label>
+                                <input type="date" id="responseDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Time Unit</label>
+                        <select id="responseTimeUnit" class="filter-select">
+                            <option value="minutes">Minutes</option>
+                            <option value="hours">Hours</option>
+                            <option value="days">Days</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetResponseFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyResponseFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="responseChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Pattern Modal -->
+        <div class="chart-modal" id="weeklyChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Weekly Pattern - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeWeeklyModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="weeklyDateFrom" class="input-label">From</label>
+                                <input type="date" id="weeklyDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="weeklyDateTo" class="input-label">To</label>
+                                <input type="date" id="weeklyDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="weeklyAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-weekly"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetWeeklyFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyWeeklyFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="weeklyChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Busiest Days Modal -->
+        <div class="chart-modal" id="busiestDaysChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Busiest Days - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeBusiestDaysModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="busiestDaysDateFrom" class="input-label">From</label>
+                                <input type="date" id="busiestDaysDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="busiestDaysDateTo" class="input-label">To</label>
+                                <input type="date" id="busiestDaysDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="busiestDaysAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-busiestDays"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Top N Days</label>
+                        <input type="range" id="busiestDaysTopN" class="filter-slider" min="5" max="30" value="10" step="5">
+                        <span id="busiestDaysTopNValue" class="filter-value">10</span>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetBusiestDaysFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyBusiestDaysFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="busiestDaysChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Daily Messages Modal -->
+        <div class="chart-modal" id="avgDailyChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Average Daily Messages - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeAvgDailyModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="avgDailyDateFrom" class="input-label">From</label>
+                                <input type="date" id="avgDailyDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="avgDailyDateTo" class="input-label">To</label>
+                                <input type="date" id="avgDailyDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="avgDailyAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-avgDaily"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Grouping</label>
+                        <select id="avgDailyGrouping" class="filter-select">
+                            <option value="weekly">Weekly Average</option>
+                            <option value="monthly">Monthly Average</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetAvgDailyFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyAvgDailyFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="avgDailyChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekend vs Weekday Modal -->
+        <div class="chart-modal" id="weekendChartModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Weekend vs Weekday - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeWeekendModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="weekendDateFrom" class="input-label">From</label>
+                                <input type="date" id="weekendDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="weekendDateTo" class="input-label">To</label>
+                                <input type="date" id="weekendDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="weekendAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-weekend"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Chart Type</label>
+                        <select id="weekendChartType" class="filter-select">
+                            <option value="bar">Bar Chart</option>
+                            <option value="doughnut">Pie Chart</option>
+                            <option value="grouped">Grouped Comparison</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetWeekendFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyWeekendFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container">
+                    <canvas id="weekendChartModal-canvas" class="modal-chart-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Word Cloud Modal -->
+        <div class="chart-modal" id="wordCloudModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content word-cloud-modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">Most Used Words - Detailed View</h2>
+                    <button class="modal-close-btn" id="closeWordCloudModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <div class="filter-inputs">
+                            <div class="input-wrapper">
+                                <label for="wordCloudDateFrom" class="input-label">From</label>
+                                <input type="date" id="wordCloudDateFrom" class="filter-input">
+                            </div>
+                            <div class="input-wrapper">
+                                <label for="wordCloudDateTo" class="input-label">To</label>
+                                <input type="date" id="wordCloudDateTo" class="filter-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Participants</label>
+                        <div class="participant-filters">
+                            <label class="checkbox-label all-participants">
+                                <input type="checkbox" id="wordCloudAllParticipants" class="participant-checkbox-all" checked>
+                                <span class="checkbox-custom"></span>
+                                <span class="participant-name">All Participants</span>
+                            </label>
+                            <div class="individual-participants-wordCloud"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Word Count</label>
+                        <select id="wordCloudCount" class="filter-select">
+                            <option value="50">Top 50</option>
+                            <option value="100">Top 100</option>
+                            <option value="150">Top 150</option>
+                            <option value="200">Top 200</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Min Word Length</label>
+                        <input type="range" id="wordCloudMinLength" class="filter-slider" min="2" max="10" value="3" step="1">
+                        <span id="wordCloudMinLengthValue" class="filter-value">3</span>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="btn-secondary filter-reset-btn" id="resetWordCloudFilters">Reset Filters</button>
+                        <button class="btn-primary filter-apply-btn" id="applyWordCloudFilters">Apply Filters</button>
+                    </div>
+                </div>
+                
+                <div class="modal-chart-container word-cloud-container">
+                    <canvas id="wordCloudModal-canvas" class="modal-chart-canvas"></canvas>
                 </div>
             </div>
         </div>

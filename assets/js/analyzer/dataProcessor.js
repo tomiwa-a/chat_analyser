@@ -304,7 +304,7 @@ async function loadStopwords() {
 
 loadStopwords();
 
-function calculateWordFrequency(messages, participant = null) {
+export function calculateWordFrequency(messages, participant = null) {
   let filteredMessages = messages;
   if (participant) {
     filteredMessages = messages.filter((m) => m.author === participant);
