@@ -651,256 +651,154 @@ function renderModalChart() {
 let hourlyChartInstances = [];
 
 export function initializeHourlyZoom() {
-  const zoomBtn = document.getElementById("hourlyZoomBtn");
-  const modal = document.getElementById("hourlyChartModal");
-  const closeBtn = document.getElementById("closeHourlyModal");
-  const backdrop = modal?.querySelector(".modal-backdrop");
-  const applyFiltersBtn = document.getElementById("applyHourlyFilters");
-  const resetFiltersBtn = document.getElementById("resetHourlyFilters");
-
-  if (!zoomBtn || !modal) return;
-
-  zoomBtn.addEventListener("click", () => {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-    initializeHourlyFilters();
-    renderHourlyModalCharts();
-  });
-
-  const closeModal = () => {
-    modal.classList.remove("active");
-    document.body.style.overflow = "";
-    hourlyChartInstances.forEach((chart) => chart?.destroy());
-    hourlyChartInstances = [];
-  };
-
-  closeBtn?.addEventListener("click", closeModal);
-  backdrop?.addEventListener("click", closeModal);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-      closeModal();
+  setupModalHandlers(
+    "hourlyZoomBtn",
+    "hourlyChartModal",
+    "closeHourlyModal",
+    () => {
+      initializeDateRangeFilter(
+        "hourlyChartModal",
+        "hourlyDateFrom",
+        "hourlyDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-hourly",
+        "participant-checkbox-hourly"
+      );
+      setupAllParticipantsToggle(
+        "hourlyAllParticipants",
+        "participant-checkbox-hourly",
+        renderHourlyModalCharts
+      );
+      renderHourlyModalCharts();
+    },
+    () => {
+      hourlyChartInstances.forEach((chart) => chart?.destroy());
+      hourlyChartInstances = [];
     }
-  });
-
-  applyFiltersBtn?.addEventListener("click", applyHourlyDateFilters);
-  resetFiltersBtn?.addEventListener("click", resetHourlyFilters);
-}
-
-function initializeHourlyFilters() {
-  const messages = getParsedMessages();
-
-  if (messages && messages.length > 0) {
-    const dates = messages.map((m) => new Date(m.date));
-    const maxDate = new Date(Math.max(...dates));
-    const minDate = new Date(maxDate);
-    minDate.setDate(minDate.getDate() - 90);
-
-    const absoluteMinDate = new Date(Math.min(...dates));
-
-    const dateFrom = document.getElementById("hourlyDateFrom");
-    const dateTo = document.getElementById("hourlyDateTo");
-
-    if (dateFrom && dateTo) {
-      const defaultFromStr = minDate.toISOString().split("T")[0];
-      const maxDateStr = maxDate.toISOString().split("T")[0];
-      const absoluteMinStr = absoluteMinDate.toISOString().split("T")[0];
-
-      dateFrom.value = defaultFromStr;
-      dateTo.value = maxDateStr;
-      dateFrom.min = absoluteMinStr;
-      dateFrom.max = maxDateStr;
-      dateTo.min = absoluteMinStr;
-      dateTo.max = maxDateStr;
-    }
-
-    const participants = getParticipantsList();
-    const modal = document.getElementById("hourlyChartModal");
-    const individualContainer = modal?.querySelector(
-      ".individual-participants-hourly"
-    );
-
-    if (individualContainer && participants.length > 0) {
-      individualContainer.innerHTML = participants
-        .map(
-          (p, index) => `
-        <label class="checkbox-label">
-          <input type="checkbox" class="participant-checkbox-hourly" value="${p}" data-index="${index}">
-          <span class="checkbox-custom"></span>
-          <span class="participant-name">${p}</span>
-        </label>
-      `
-        )
-        .join("");
-
-      setupHourlyParticipantListeners();
-    }
-  }
-}
-
-function setupHourlyParticipantListeners() {
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = document.querySelectorAll(
-    ".participant-checkbox-hourly"
   );
 
-  allCheckbox?.addEventListener("change", () => {
-    if (allCheckbox.checked) {
-      individualCheckboxes.forEach((cb) => (cb.checked = false));
-      renderHourlyModalCharts();
-    }
-  });
-
-  individualCheckboxes.forEach((cb) => {
-    cb.addEventListener("change", () => {
-      if (cb.checked) {
-        allCheckbox.checked = false;
-      }
-
-      const anyChecked = Array.from(individualCheckboxes).some(
-        (checkbox) => checkbox.checked
+  document
+    .getElementById("applyHourlyFilters")
+    ?.addEventListener("click", renderHourlyModalCharts);
+  document
+    .getElementById("resetHourlyFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("hourlyAllParticipants").checked = true;
+      initializeDateRangeFilter(
+        "hourlyChartModal",
+        "hourlyDateFrom",
+        "hourlyDateTo"
       );
-      if (!anyChecked) {
-        allCheckbox.checked = true;
-      }
-
       renderHourlyModalCharts();
     });
-  });
 }
 
 function renderHourlyModalCharts() {
-  const messages = getParsedMessages();
-  if (!messages || messages.length === 0) return;
-
-  const dateFromInput = document.getElementById("hourlyDateFrom");
-  const dateToInput = document.getElementById("hourlyDateTo");
-
-  if (!dateFromInput?.value || !dateToInput?.value) return;
-
-  const dateFrom = new Date(dateFromInput.value);
-  const dateTo = new Date(dateToInput.value);
-  dateTo.setHours(23, 59, 59, 999);
-
-  const filteredMessages = messages.filter((m) => {
-    const msgDate = new Date(m.date);
-    return msgDate >= dateFrom && msgDate <= dateTo;
-  });
-
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = Array.from(
-    document.querySelectorAll(".participant-checkbox-hourly:checked")
+  const filtered = getFilteredMessages(
+    "hourlyDateFrom",
+    "hourlyDateTo",
+    "hourlyAllParticipants",
+    "participant-checkbox-hourly"
   );
 
-  const container = document.getElementById("hourlyChartsContainer");
-  container.innerHTML = "";
+  const allParticipants = document.getElementById(
+    "hourlyAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-hourly");
 
   hourlyChartInstances.forEach((chart) => chart?.destroy());
   hourlyChartInstances = [];
 
-  if (allCheckbox.checked) {
-    const chartData = getHourlyActivityForMessages(filteredMessages);
-    createHourlyChart(container, "All Participants", chartData, "#7C3AED");
-  } else if (individualCheckboxes.length > 0) {
-    individualCheckboxes.forEach((cb) => {
-      const participant = cb.value;
-      const participantMessages = filteredMessages.filter(
+  const container = document.getElementById("hourlyChartsContainer");
+  if (!container) return;
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    container.innerHTML = selectedParticipants
+      .map(
+        (participant, idx) => `
+      <div class="participant-hourly-chart">
+        <h3 style="text-align: center; margin-bottom: 1rem; color: ${getParticipantColor(
+          idx
+        )};">${participant}</h3>
+        <canvas id="hourlyChart-${idx}" style="max-height: 300px;"></canvas>
+      </div>
+    `
+      )
+      .join("");
+
+    selectedParticipants.forEach((participant, idx) => {
+      const participantMessages = filtered.filter(
         (m) => m.author === participant
       );
-      const chartData = getHourlyActivityForMessages(participantMessages);
-      const colorIndex = parseInt(cb.dataset.index);
-      const color = PARTICIPANT_COLORS[colorIndex % PARTICIPANT_COLORS.length];
-      createHourlyChart(container, participant, chartData, color);
+      const chartData = getHourlyActivity(participantMessages);
+      const canvas = document.getElementById(`hourlyChart-${idx}`);
+
+      if (canvas && chartData) {
+        const chart = new Chart(canvas, {
+          type: "bar",
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: "Messages",
+                data: chartData.data,
+                backgroundColor: getParticipantColor(idx),
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+        hourlyChartInstances.push(chart);
+      }
     });
-  }
-}
+  } else {
+    container.innerHTML = `<canvas id="hourlyChart-all" style="max-height: 400px;"></canvas>`;
+    const chartData = getHourlyActivity(filtered);
+    const canvas = document.getElementById("hourlyChart-all");
 
-function getHourlyActivityForMessages(messages) {
-  const hourCount = new Array(24).fill(0);
-
-  messages.forEach((m) => {
-    const hour = new Date(m.date).getHours();
-    hourCount[hour]++;
-  });
-
-  const labels = [];
-  for (let i = 0; i < 24; i++) {
-    const period = i >= 12 ? "PM" : "AM";
-    const displayHour = i % 12 || 12;
-    labels.push(`${displayHour}${period}`);
-  }
-
-  return { labels, data: hourCount };
-}
-
-function createHourlyChart(container, title, chartData, color) {
-  const chartWrapper = document.createElement("div");
-  chartWrapper.className = "hourly-participant-chart";
-  chartWrapper.innerHTML = `
-    <h4>${title}</h4>
-    <canvas class="hourly-chart-canvas"></canvas>
-  `;
-  container.appendChild(chartWrapper);
-
-  const canvas = chartWrapper.querySelector("canvas");
-  const chart = new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels: chartData.labels,
-      datasets: [
-        {
-          label: "Messages",
-          data: chartData.data,
-          backgroundColor: `${color}40`,
-          borderColor: color,
-          borderWidth: 2,
-          borderRadius: 4,
+    if (canvas && chartData) {
+      const chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: "Messages",
+              data: chartData.data,
+              backgroundColor: chartColors.secondary,
+              borderRadius: 6,
+            },
+          ],
         },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => items[0].label,
-            label: (item) => `${item.parsed.y} messages`,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+            x: { grid: { display: false } },
           },
         },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: "#E4E4E7" },
-          ticks: { precision: 0 },
-        },
-        x: {
-          grid: { display: false },
-        },
-      },
-    },
-  });
-
-  hourlyChartInstances.push(chart);
-}
-
-function applyHourlyDateFilters() {
-  renderHourlyModalCharts();
-}
-
-function resetHourlyFilters() {
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = document.querySelectorAll(
-    ".participant-checkbox-hourly"
-  );
-
-  allCheckbox.checked = true;
-  individualCheckboxes.forEach((cb) => (cb.checked = false));
-
-  initializeHourlyFilters();
-  renderHourlyModalCharts();
+      });
+      hourlyChartInstances.push(chart);
+    }
+  }
 }
 
 // Import modal utilities
@@ -1222,7 +1120,13 @@ function renderPeakTimesModalChart() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { 
+          legend: { 
+            display: chartType === "doughnut",
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 }
+          } 
+        },
         scales:
           chartType === "doughnut"
             ? {}
