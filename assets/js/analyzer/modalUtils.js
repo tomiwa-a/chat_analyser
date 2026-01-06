@@ -10,20 +10,14 @@ export function initializeDateRangeFilter(modalId, dateFromId, dateToId) {
   const maxDate = new Date(Math.max(...dates));
   const minDate = new Date(Math.min(...dates));
 
-  // Set default to last 90 days or all data if less
-  const defaultFromDate = new Date(maxDate);
-  defaultFromDate.setDate(defaultFromDate.getDate() - 90);
-  const actualFromDate = defaultFromDate < minDate ? minDate : defaultFromDate;
-
   const dateFrom = document.getElementById(dateFromId);
   const dateTo = document.getElementById(dateToId);
 
   if (dateFrom && dateTo) {
     const maxDateStr = maxDate.toISOString().split("T")[0];
     const minDateStr = minDate.toISOString().split("T")[0];
-    const defaultFromStr = actualFromDate.toISOString().split("T")[0];
 
-    dateFrom.value = defaultFromStr;
+    dateFrom.value = minDateStr;
     dateTo.value = maxDateStr;
     dateFrom.min = minDateStr;
     dateFrom.max = maxDateStr;
