@@ -1,4 +1,4 @@
-import { chartColors } from "./utils.js";
+import { chartColors, getParticipantColor } from "./utils.js";
 import {
   getParsedMessages,
   getParticipantsList,
@@ -72,62 +72,15 @@ export function initializeCharts(chartData = {}) {
     });
   }
 
-  const sentimentCtx = document.getElementById("sentimentChart");
-  if (sentimentCtx) {
-    new Chart(sentimentCtx, {
-      type: "line",
-      data: {
-        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-        datasets: [
-          {
-            label: "Positive",
-            data: [72, 78, 75, 82],
-            borderColor: chartColors.accent,
-            backgroundColor: `${chartColors.accent}20`,
-            fill: true,
-            tension: 0.4,
-          },
-          {
-            label: "Neutral",
-            data: [20, 15, 18, 12],
-            borderColor: chartColors.orange,
-            backgroundColor: `${chartColors.orange}20`,
-            fill: true,
-            tension: 0.4,
-          },
-          {
-            label: "Negative",
-            data: [8, 7, 7, 6],
-            borderColor: chartColors.rose,
-            backgroundColor: `${chartColors.rose}20`,
-            fill: true,
-            tension: 0.4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 12, padding: 15 } },
-        },
-        scales: {
-          y: { beginAtZero: true, max: 100, grid: { color: "#E4E4E7" } },
-          x: { grid: { display: false } },
-        },
-      },
-    });
-  }
-
   const lengthCtx = document.getElementById("lengthChart");
-  if (lengthCtx) {
-    new Chart(lengthCtx, {
+  if (lengthCtx && chartData.messageLengthDistribution) {
+    chartInstances.length = new Chart(lengthCtx, {
       type: "doughnut",
       data: {
-        labels: ["< 10 words", "10-30 words", "30-50 words", "> 50 words"],
+        labels: chartData.messageLengthDistribution.labels,
         datasets: [
           {
-            data: [340, 1205, 780, 222],
+            data: chartData.messageLengthDistribution.data,
             backgroundColor: [
               chartColors.primary,
               chartColors.secondary,
@@ -149,16 +102,25 @@ export function initializeCharts(chartData = {}) {
   }
 
   const responseCtx = document.getElementById("responseChart");
-  if (responseCtx) {
-    new Chart(responseCtx, {
+  if (responseCtx && chartData.responseTimeByParticipant) {
+    chartInstances.response = new Chart(responseCtx, {
       type: "bar",
       data: {
-        labels: ["John", "Jane"],
+        labels: chartData.responseTimeByParticipant.labels,
         datasets: [
           {
             label: "Avg Response (minutes)",
-            data: [3.2, 4.5],
-            backgroundColor: [chartColors.primary, chartColors.secondary],
+            data: chartData.responseTimeByParticipant.data,
+            backgroundColor: chartData.responseTimeByParticipant.labels.map(
+              (_, i) =>
+                [
+                  chartColors.primary,
+                  chartColors.secondary,
+                  chartColors.accent,
+                  chartColors.orange,
+                  chartColors.rose,
+                ][i % 5]
+            ),
             borderRadius: 8,
             barThickness: 60,
           },
@@ -177,15 +139,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const weeklyCtx = document.getElementById("weeklyChart");
-  if (weeklyCtx) {
-    new Chart(weeklyCtx, {
+  if (weeklyCtx && chartData.weeklyPattern) {
+    chartInstances.weekly = new Chart(weeklyCtx, {
       type: "radar",
       data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        labels: chartData.weeklyPattern.labels,
         datasets: [
           {
             label: "Messages",
-            data: [320, 410, 380, 450, 420, 280, 190],
+            data: chartData.weeklyPattern.data,
             borderColor: chartColors.primary,
             backgroundColor: `${chartColors.primary}20`,
             borderWidth: 2,
@@ -204,6 +166,9 @@ export function initializeCharts(chartData = {}) {
             beginAtZero: true,
             grid: { color: "#E4E4E7" },
             angleLines: { color: "#E4E4E7" },
+            ticks: {
+              display: false,
+            },
           },
         },
       },
@@ -241,20 +206,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const peakTimesCtx = document.getElementById("peakTimesChart");
-  if (peakTimesCtx) {
-    new Chart(peakTimesCtx, {
+  if (peakTimesCtx && chartData.peakTimes) {
+    chartInstances.peakTimes = new Chart(peakTimesCtx, {
       type: "bar",
       data: {
-        labels: [
-          "Morning\n(6-12)",
-          "Afternoon\n(12-18)",
-          "Evening\n(18-24)",
-          "Night\n(0-6)",
-        ],
+        labels: chartData.peakTimes.labels,
         datasets: [
           {
             label: "Messages",
-            data: [420, 680, 1240, 207],
+            data: chartData.peakTimes.data,
             backgroundColor: [
               chartColors.orange,
               chartColors.secondary,
@@ -277,57 +237,16 @@ export function initializeCharts(chartData = {}) {
     });
   }
 
-  const emotionCtx = document.getElementById("emotionChart");
-  if (emotionCtx) {
-    new Chart(emotionCtx, {
-      type: "doughnut",
-      data: {
-        labels: ["Happy", "Excited", "Neutral", "Sad", "Angry"],
-        datasets: [
-          {
-            data: [920, 680, 560, 250, 137],
-            backgroundColor: [
-              chartColors.accent,
-              chartColors.orange,
-              chartColors.secondary,
-              chartColors.blue,
-              chartColors.rose,
-            ],
-            borderWidth: 0,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { boxWidth: 12, padding: 10 } },
-        },
-      },
-    });
-  }
-
   const busiestDaysCtx = document.getElementById("busiestDaysChart");
-  if (busiestDaysCtx) {
-    new Chart(busiestDaysCtx, {
+  if (busiestDaysCtx && chartData.busiestDays) {
+    chartInstances.busiestDays = new Chart(busiestDaysCtx, {
       type: "bar",
       data: {
-        labels: [
-          "Jan 15",
-          "Feb 3",
-          "Mar 22",
-          "Apr 8",
-          "May 12",
-          "Jun 5",
-          "Jul 18",
-          "Aug 9",
-          "Sep 14",
-          "Oct 2",
-        ],
+        labels: chartData.busiestDays.labels,
         datasets: [
           {
             label: "Messages",
-            data: [89, 84, 78, 76, 73, 71, 69, 67, 65, 63],
+            data: chartData.busiestDays.data,
             backgroundColor: chartColors.primary,
             borderRadius: 6,
           },
@@ -346,15 +265,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const avgDailyCtx = document.getElementById("avgDailyChart");
-  if (avgDailyCtx) {
-    new Chart(avgDailyCtx, {
+  if (avgDailyCtx && chartData.averageDailyMessages) {
+    chartInstances.avgDaily = new Chart(avgDailyCtx, {
       type: "line",
       data: {
-        labels: ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+        labels: chartData.averageDailyMessages.labels,
         datasets: [
           {
             label: "Avg Messages/Day",
-            data: [35, 42, 38, 45, 40, 37],
+            data: chartData.averageDailyMessages.data,
             borderColor: chartColors.secondary,
             backgroundColor: `${chartColors.secondary}30`,
             fill: true,
@@ -378,15 +297,15 @@ export function initializeCharts(chartData = {}) {
   }
 
   const weekendCtx = document.getElementById("weekendChart");
-  if (weekendCtx) {
-    new Chart(weekendCtx, {
+  if (weekendCtx && chartData.weekendVsWeekday) {
+    chartInstances.weekend = new Chart(weekendCtx, {
       type: "bar",
       data: {
-        labels: ["Weekday", "Weekend"],
+        labels: chartData.weekendVsWeekday.labels,
         datasets: [
           {
             label: "Total Messages",
-            data: [1820, 727],
+            data: chartData.weekendVsWeekday.data,
             backgroundColor: [chartColors.primary, chartColors.accent],
             borderRadius: 8,
             barThickness: 100,
@@ -732,210 +651,564 @@ function renderModalChart() {
 let hourlyChartInstances = [];
 
 export function initializeHourlyZoom() {
-  const zoomBtn = document.getElementById("hourlyZoomBtn");
-  const modal = document.getElementById("hourlyChartModal");
-  const closeBtn = document.getElementById("closeHourlyModal");
-  const backdrop = modal?.querySelector(".modal-backdrop");
-  const applyFiltersBtn = document.getElementById("applyHourlyFilters");
-  const resetFiltersBtn = document.getElementById("resetHourlyFilters");
-
-  if (!zoomBtn || !modal) return;
-
-  zoomBtn.addEventListener("click", () => {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-    initializeHourlyFilters();
-    renderHourlyModalCharts();
-  });
-
-  const closeModal = () => {
-    modal.classList.remove("active");
-    document.body.style.overflow = "";
-    hourlyChartInstances.forEach((chart) => chart?.destroy());
-    hourlyChartInstances = [];
-  };
-
-  closeBtn?.addEventListener("click", closeModal);
-  backdrop?.addEventListener("click", closeModal);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) {
-      closeModal();
+  setupModalHandlers(
+    "hourlyZoomBtn",
+    "hourlyChartModal",
+    "closeHourlyModal",
+    () => {
+      initializeDateRangeFilter(
+        "hourlyChartModal",
+        "hourlyDateFrom",
+        "hourlyDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-hourly",
+        "participant-checkbox-hourly"
+      );
+      setupAllParticipantsToggle(
+        "hourlyAllParticipants",
+        "participant-checkbox-hourly",
+        renderHourlyModalCharts
+      );
+      renderHourlyModalCharts();
+    },
+    () => {
+      hourlyChartInstances.forEach((chart) => chart?.destroy());
+      hourlyChartInstances = [];
     }
-  });
-
-  applyFiltersBtn?.addEventListener("click", applyHourlyDateFilters);
-  resetFiltersBtn?.addEventListener("click", resetHourlyFilters);
-}
-
-function initializeHourlyFilters() {
-  const messages = getParsedMessages();
-
-  if (messages && messages.length > 0) {
-    const dates = messages.map((m) => new Date(m.date));
-    const maxDate = new Date(Math.max(...dates));
-    const minDate = new Date(maxDate);
-    minDate.setDate(minDate.getDate() - 90);
-
-    const absoluteMinDate = new Date(Math.min(...dates));
-
-    const dateFrom = document.getElementById("hourlyDateFrom");
-    const dateTo = document.getElementById("hourlyDateTo");
-
-    if (dateFrom && dateTo) {
-      const defaultFromStr = minDate.toISOString().split("T")[0];
-      const maxDateStr = maxDate.toISOString().split("T")[0];
-      const absoluteMinStr = absoluteMinDate.toISOString().split("T")[0];
-
-      dateFrom.value = defaultFromStr;
-      dateTo.value = maxDateStr;
-      dateFrom.min = absoluteMinStr;
-      dateFrom.max = maxDateStr;
-      dateTo.min = absoluteMinStr;
-      dateTo.max = maxDateStr;
-    }
-
-    const participants = getParticipantsList();
-    const modal = document.getElementById("hourlyChartModal");
-    const individualContainer = modal?.querySelector(
-      ".individual-participants-hourly"
-    );
-
-    if (individualContainer && participants.length > 0) {
-      individualContainer.innerHTML = participants
-        .map(
-          (p, index) => `
-        <label class="checkbox-label">
-          <input type="checkbox" class="participant-checkbox-hourly" value="${p}" data-index="${index}">
-          <span class="checkbox-custom"></span>
-          <span class="participant-name">${p}</span>
-        </label>
-      `
-        )
-        .join("");
-
-      setupHourlyParticipantListeners();
-    }
-  }
-}
-
-function setupHourlyParticipantListeners() {
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = document.querySelectorAll(
-    ".participant-checkbox-hourly"
   );
 
-  allCheckbox?.addEventListener("change", () => {
-    if (allCheckbox.checked) {
-      individualCheckboxes.forEach((cb) => (cb.checked = false));
-      renderHourlyModalCharts();
-    }
-  });
-
-  individualCheckboxes.forEach((cb) => {
-    cb.addEventListener("change", () => {
-      if (cb.checked) {
-        allCheckbox.checked = false;
-      }
-
-      const anyChecked = Array.from(individualCheckboxes).some(
-        (checkbox) => checkbox.checked
+  document
+    .getElementById("applyHourlyFilters")
+    ?.addEventListener("click", renderHourlyModalCharts);
+  document
+    .getElementById("resetHourlyFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("hourlyAllParticipants").checked = true;
+      initializeDateRangeFilter(
+        "hourlyChartModal",
+        "hourlyDateFrom",
+        "hourlyDateTo"
       );
-      if (!anyChecked) {
-        allCheckbox.checked = true;
-      }
-
       renderHourlyModalCharts();
     });
-  });
 }
 
 function renderHourlyModalCharts() {
-  const messages = getParsedMessages();
-  if (!messages || messages.length === 0) return;
-
-  const dateFromInput = document.getElementById("hourlyDateFrom");
-  const dateToInput = document.getElementById("hourlyDateTo");
-
-  if (!dateFromInput?.value || !dateToInput?.value) return;
-
-  const dateFrom = new Date(dateFromInput.value);
-  const dateTo = new Date(dateToInput.value);
-  dateTo.setHours(23, 59, 59, 999);
-
-  const filteredMessages = messages.filter((m) => {
-    const msgDate = new Date(m.date);
-    return msgDate >= dateFrom && msgDate <= dateTo;
-  });
-
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = Array.from(
-    document.querySelectorAll(".participant-checkbox-hourly:checked")
+  const filtered = getFilteredMessages(
+    "hourlyDateFrom",
+    "hourlyDateTo",
+    "hourlyAllParticipants",
+    "participant-checkbox-hourly"
   );
 
-  const container = document.getElementById("hourlyChartsContainer");
-  container.innerHTML = "";
+  const allParticipants = document.getElementById(
+    "hourlyAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-hourly");
 
   hourlyChartInstances.forEach((chart) => chart?.destroy());
   hourlyChartInstances = [];
 
-  if (allCheckbox.checked) {
-    const chartData = getHourlyActivityForMessages(filteredMessages);
-    createHourlyChart(container, "All Participants", chartData, "#7C3AED");
-  } else if (individualCheckboxes.length > 0) {
-    individualCheckboxes.forEach((cb) => {
-      const participant = cb.value;
-      const participantMessages = filteredMessages.filter(
+  const container = document.getElementById("hourlyChartsContainer");
+  if (!container) return;
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    container.innerHTML = selectedParticipants
+      .map(
+        (participant, idx) => `
+      <div class="participant-hourly-chart">
+        <h3 style="text-align: center; margin-bottom: 1rem; color: ${getParticipantColor(
+          idx
+        )};">${participant}</h3>
+        <canvas id="hourlyChart-${idx}" style="max-height: 300px;"></canvas>
+      </div>
+    `
+      )
+      .join("");
+
+    selectedParticipants.forEach((participant, idx) => {
+      const participantMessages = filtered.filter(
         (m) => m.author === participant
       );
-      const chartData = getHourlyActivityForMessages(participantMessages);
-      const colorIndex = parseInt(cb.dataset.index);
-      const color = PARTICIPANT_COLORS[colorIndex % PARTICIPANT_COLORS.length];
-      createHourlyChart(container, participant, chartData, color);
+      const chartData = getHourlyActivity(participantMessages);
+      const canvas = document.getElementById(`hourlyChart-${idx}`);
+
+      if (canvas && chartData) {
+        const chart = new Chart(canvas, {
+          type: "bar",
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                label: "Messages",
+                data: chartData.data,
+                backgroundColor: getParticipantColor(idx),
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+        hourlyChartInstances.push(chart);
+      }
+    });
+  } else {
+    container.innerHTML = `<canvas id="hourlyChart-all" style="max-height: 400px;"></canvas>`;
+    const chartData = getHourlyActivity(filtered);
+    const canvas = document.getElementById("hourlyChart-all");
+
+    if (canvas && chartData) {
+      const chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: "Messages",
+              data: chartData.data,
+              backgroundColor: chartColors.secondary,
+              borderRadius: 6,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+            x: { grid: { display: false } },
+          },
+        },
+      });
+      hourlyChartInstances.push(chart);
+    }
+  }
+}
+
+// Import modal utilities
+import {
+  setupModalHandlers,
+  initializeDateRangeFilter,
+  initializeParticipantFilter,
+  setupAllParticipantsToggle,
+  getFilteredMessages,
+  getSelectedParticipants,
+  setupSliderValueDisplay,
+} from "./modalUtils.js";
+
+import {
+  getMonthlyActivity,
+  getMonthlyActivityByParticipants,
+  getPeakTimes,
+  getPeakTimesByParticipants,
+  getMessageLengthDistribution,
+  getResponseTimeByParticipant,
+  getWeeklyPattern,
+  getWeeklyPatternByParticipants,
+  getBusiestDays,
+  getBusiestDaysByParticipants,
+  getAverageDailyMessages,
+  getAverageDailyMessagesByParticipants,
+  getWeekendVsWeekday,
+  getWeekendVsWeekdayByParticipants,
+  calculateWordFrequency,
+  renderWordCloud as renderWordCloudData,
+} from "./dataProcessor.js";
+
+let modalChartInstances = {};
+
+// Initialize all modals
+export function initializeAllModals() {
+  initializeMonthlyModal();
+  initializePeakTimesModal();
+  initializeLengthModal();
+  initializeResponseModal();
+  initializeWeeklyModal();
+  initializeBusiestDaysModal();
+  initializeAvgDailyModal();
+  initializeWeekendModal();
+  initializeWordCloudModal();
+}
+
+// Monthly Activity Modal
+function initializeMonthlyModal() {
+  setupModalHandlers(
+    "monthlyZoomBtn",
+    "monthlyChartModal",
+    "closeMonthlyModal",
+    () => {
+      initializeDateRangeFilter(
+        "monthlyChartModal",
+        "monthlyDateFrom",
+        "monthlyDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-monthly",
+        "participant-checkbox-monthly"
+      );
+      setupAllParticipantsToggle(
+        "monthlyAllParticipants",
+        "participant-checkbox-monthly",
+        renderMonthlyModalChart
+      );
+      renderMonthlyModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyMonthlyFilters")
+    ?.addEventListener("click", renderMonthlyModalChart);
+  document
+    .getElementById("resetMonthlyFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("monthlyAllParticipants").checked = true;
+      initializeDateRangeFilter(
+        "monthlyChartModal",
+        "monthlyDateFrom",
+        "monthlyDateTo"
+      );
+      renderMonthlyModalChart();
+    });
+}
+
+function renderMonthlyModalChart() {
+  const filtered = getFilteredMessages(
+    "monthlyDateFrom",
+    "monthlyDateTo",
+    "monthlyAllParticipants",
+    "participant-checkbox-monthly"
+  );
+
+  const allParticipants = document.getElementById(
+    "monthlyAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-monthly");
+
+  const canvas = document.getElementById("monthlyChartModal-canvas");
+
+  if (modalChartInstances.monthly) {
+    modalChartInstances.monthly.destroy();
+  }
+
+  // Use per-participant data when individual participants are selected
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getMonthlyActivityByParticipants(
+      filtered,
+      selectedParticipants
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      borderColor: getParticipantColor(index),
+      backgroundColor: `${getParticipantColor(index)}20`,
+      fill: true,
+      tension: 0.4,
+      borderWidth: 2,
+    }));
+
+    modalChartInstances.monthly = new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  } else {
+    // Show aggregated data for all participants
+    const chartData = getMonthlyActivity(filtered);
+
+    modalChartInstances.monthly = new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Messages",
+            data: chartData.data,
+            borderColor: chartColors.primary,
+            backgroundColor: `${chartColors.primary}20`,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
     });
   }
 }
 
-function getHourlyActivityForMessages(messages) {
-  const hourCount = new Array(24).fill(0);
+// Peak Times Modal
+function initializePeakTimesModal() {
+  setupModalHandlers(
+    "peakTimesZoomBtn",
+    "peakTimesChartModal",
+    "closePeakTimesModal",
+    () => {
+      initializeDateRangeFilter(
+        "peakTimesChartModal",
+        "peakTimesDateFrom",
+        "peakTimesDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-peakTimes",
+        "participant-checkbox-peakTimes"
+      );
+      setupAllParticipantsToggle(
+        "peakTimesAllParticipants",
+        "participant-checkbox-peakTimes",
+        renderPeakTimesModalChart
+      );
+      renderPeakTimesModalChart();
+    }
+  );
 
-  messages.forEach((m) => {
-    const hour = new Date(m.date).getHours();
-    hourCount[hour]++;
-  });
+  document
+    .getElementById("applyPeakTimesFilters")
+    ?.addEventListener("click", renderPeakTimesModalChart);
+  document
+    .getElementById("resetPeakTimesFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("peakTimesAllParticipants").checked = true;
+      document.getElementById("peakTimesChartType").value = "bar";
+      initializeDateRangeFilter(
+        "peakTimesChartModal",
+        "peakTimesDateFrom",
+        "peakTimesDateTo"
+      );
+      renderPeakTimesModalChart();
+    });
 
-  const labels = [];
-  for (let i = 0; i < 24; i++) {
-    const period = i >= 12 ? "PM" : "AM";
-    const displayHour = i % 12 || 12;
-    labels.push(`${displayHour}${period}`);
-  }
-
-  return { labels, data: hourCount };
+  document
+    .getElementById("peakTimesChartType")
+    ?.addEventListener("change", renderPeakTimesModalChart);
 }
 
-function createHourlyChart(container, title, chartData, color) {
-  const chartWrapper = document.createElement("div");
-  chartWrapper.className = "hourly-participant-chart";
-  chartWrapper.innerHTML = `
-    <h4>${title}</h4>
-    <canvas class="hourly-chart-canvas"></canvas>
-  `;
-  container.appendChild(chartWrapper);
+function renderPeakTimesModalChart() {
+  const filtered = getFilteredMessages(
+    "peakTimesDateFrom",
+    "peakTimesDateTo",
+    "peakTimesAllParticipants",
+    "participant-checkbox-peakTimes"
+  );
 
-  const canvas = chartWrapper.querySelector("canvas");
-  const chart = new Chart(canvas, {
-    type: "bar",
+  const allParticipants = document.getElementById(
+    "peakTimesAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-peakTimes");
+  const chartType =
+    document.getElementById("peakTimesChartType")?.value || "bar";
+  const canvas = document.getElementById("peakTimesChartModal-canvas");
+
+  if (modalChartInstances.peakTimes) {
+    modalChartInstances.peakTimes.destroy();
+  }
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getPeakTimesByParticipants(
+      filtered,
+      selectedParticipants
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      backgroundColor: getParticipantColor(index),
+      borderRadius: chartType === "bar" ? 8 : 0,
+      borderWidth: 0,
+    }));
+
+    modalChartInstances.peakTimes = new Chart(canvas, {
+      type: chartType,
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales:
+          chartType === "doughnut"
+            ? {}
+            : {
+                y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+                x: { grid: { display: false } },
+              },
+      },
+    });
+  } else {
+    const chartData = getPeakTimes(filtered);
+
+    modalChartInstances.peakTimes = new Chart(canvas, {
+      type: chartType,
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Messages",
+            data: chartData.data,
+            backgroundColor: [
+              chartColors.orange,
+              chartColors.secondary,
+              chartColors.primary,
+              chartColors.purple,
+            ],
+            borderRadius: chartType === "bar" ? 8 : 0,
+            borderWidth: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { 
+          legend: { 
+            display: chartType === "doughnut",
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 }
+          } 
+        },
+        scales:
+          chartType === "doughnut"
+            ? {}
+            : {
+                y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+                x: { grid: { display: false } },
+              },
+      },
+    });
+  }
+}
+
+// Message Length Modal
+function initializeLengthModal() {
+  setupModalHandlers(
+    "lengthZoomBtn",
+    "lengthChartModal",
+    "closeLengthModal",
+    () => {
+      initializeDateRangeFilter(
+        "lengthChartModal",
+        "lengthDateFrom",
+        "lengthDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-length",
+        "participant-checkbox-length"
+      );
+      setupAllParticipantsToggle(
+        "lengthAllParticipants",
+        "participant-checkbox-length",
+        renderLengthModalChart
+      );
+      renderLengthModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyLengthFilters")
+    ?.addEventListener("click", renderLengthModalChart);
+  document
+    .getElementById("resetLengthFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("lengthAllParticipants").checked = true;
+      initializeDateRangeFilter(
+        "lengthChartModal",
+        "lengthDateFrom",
+        "lengthDateTo"
+      );
+      renderLengthModalChart();
+    });
+}
+
+function renderLengthModalChart() {
+  const filtered = getFilteredMessages(
+    "lengthDateFrom",
+    "lengthDateTo",
+    "lengthAllParticipants",
+    "participant-checkbox-length"
+  );
+
+  const chartData = getMessageLengthDistribution(filtered);
+  const canvas = document.getElementById("lengthChartModal-canvas");
+
+  if (modalChartInstances.length) {
+    modalChartInstances.length.destroy();
+  }
+
+  modalChartInstances.length = new Chart(canvas, {
+    type: "doughnut",
     data: {
       labels: chartData.labels,
       datasets: [
         {
-          label: "Messages",
           data: chartData.data,
-          backgroundColor: `${color}40`,
-          borderColor: color,
-          borderWidth: 2,
-          borderRadius: 4,
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.secondary,
+            chartColors.accent,
+            chartColors.rose,
+          ],
+          borderWidth: 0,
         },
       ],
     },
@@ -943,43 +1216,783 @@ function createHourlyChart(container, title, chartData, color) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => items[0].label,
-            label: (item) => `${item.parsed.y} messages`,
-          },
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: "#E4E4E7" },
-          ticks: { precision: 0 },
-        },
-        x: {
-          grid: { display: false },
-        },
+        legend: { position: "bottom", labels: { boxWidth: 12, padding: 10 } },
       },
     },
   });
-
-  hourlyChartInstances.push(chart);
 }
 
-function applyHourlyDateFilters() {
-  renderHourlyModalCharts();
-}
-
-function resetHourlyFilters() {
-  const allCheckbox = document.getElementById("hourlyAllParticipants");
-  const individualCheckboxes = document.querySelectorAll(
-    ".participant-checkbox-hourly"
+// Response Time Modal
+function initializeResponseModal() {
+  setupModalHandlers(
+    "responseZoomBtn",
+    "responseChartModal",
+    "closeResponseModal",
+    () => {
+      initializeDateRangeFilter(
+        "responseChartModal",
+        "responseDateFrom",
+        "responseDateTo"
+      );
+      renderResponseModalChart();
+    }
   );
 
-  allCheckbox.checked = true;
-  individualCheckboxes.forEach((cb) => (cb.checked = false));
+  document
+    .getElementById("applyResponseFilters")
+    ?.addEventListener("click", renderResponseModalChart);
+  document
+    .getElementById("resetResponseFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("responseTimeUnit").value = "minutes";
+      initializeDateRangeFilter(
+        "responseChartModal",
+        "responseDateFrom",
+        "responseDateTo"
+      );
+      renderResponseModalChart();
+    });
 
-  initializeHourlyFilters();
-  renderHourlyModalCharts();
+  document
+    .getElementById("responseTimeUnit")
+    ?.addEventListener("change", renderResponseModalChart);
+}
+
+function renderResponseModalChart() {
+  const filtered = getFilteredMessages(
+    "responseDateFrom",
+    "responseDateTo",
+    "allParticipants", // Not used for response time
+    "participant-checkbox"
+  );
+
+  const chartData = getResponseTimeByParticipant(filtered);
+  const timeUnit =
+    document.getElementById("responseTimeUnit")?.value || "minutes";
+  const canvas = document.getElementById("responseChartModal-canvas");
+
+  // Convert data based on time unit
+  const convertedData = chartData.data.map((minutes) => {
+    if (timeUnit === "hours") return minutes / 60;
+    if (timeUnit === "days") return minutes / 1440;
+    return minutes;
+  });
+
+  if (modalChartInstances.response) {
+    modalChartInstances.response.destroy();
+  }
+
+  modalChartInstances.response = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: chartData.labels,
+      datasets: [
+        {
+          label: `Avg Response (${timeUnit})`,
+          data: convertedData,
+          backgroundColor: chartData.labels.map(
+            (_, i) =>
+              [
+                chartColors.primary,
+                chartColors.secondary,
+                chartColors.accent,
+                chartColors.orange,
+                chartColors.rose,
+              ][i % 5]
+          ),
+          borderRadius: 8,
+          barThickness: 60,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+        x: { grid: { display: false } },
+      },
+    },
+  });
+}
+
+// Weekly Pattern Modal
+function initializeWeeklyModal() {
+  setupModalHandlers(
+    "weeklyZoomBtn",
+    "weeklyChartModal",
+    "closeWeeklyModal",
+    () => {
+      initializeDateRangeFilter(
+        "weeklyChartModal",
+        "weeklyDateFrom",
+        "weeklyDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-weekly",
+        "participant-checkbox-weekly"
+      );
+      setupAllParticipantsToggle(
+        "weeklyAllParticipants",
+        "participant-checkbox-weekly",
+        renderWeeklyModalChart
+      );
+      renderWeeklyModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyWeeklyFilters")
+    ?.addEventListener("click", renderWeeklyModalChart);
+  document
+    .getElementById("resetWeeklyFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("weeklyAllParticipants").checked = true;
+      initializeDateRangeFilter(
+        "weeklyChartModal",
+        "weeklyDateFrom",
+        "weeklyDateTo"
+      );
+      renderWeeklyModalChart();
+    });
+}
+
+function renderWeeklyModalChart() {
+  const filtered = getFilteredMessages(
+    "weeklyDateFrom",
+    "weeklyDateTo",
+    "weeklyAllParticipants",
+    "participant-checkbox-weekly"
+  );
+
+  const allParticipants = document.getElementById(
+    "weeklyAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-weekly");
+  const canvas = document.getElementById("weeklyChartModal-canvas");
+
+  if (modalChartInstances.weekly) {
+    modalChartInstances.weekly.destroy();
+  }
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getWeeklyPatternByParticipants(
+      filtered,
+      selectedParticipants
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      borderColor: getParticipantColor(index),
+      backgroundColor: `${getParticipantColor(index)}20`,
+      borderWidth: 2,
+      pointBackgroundColor: getParticipantColor(index),
+      pointBorderColor: "#fff",
+      pointRadius: 4,
+    }));
+
+    modalChartInstances.weekly = new Chart(canvas, {
+      type: "radar",
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales: {
+          r: {
+            beginAtZero: true,
+            grid: { color: "#E4E4E7" },
+            angleLines: { color: "#E4E4E7" },
+            ticks: { display: false },
+          },
+        },
+      },
+    });
+  } else {
+    const chartData = getWeeklyPattern(filtered);
+
+    modalChartInstances.weekly = new Chart(canvas, {
+      type: "radar",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Messages",
+            data: chartData.data,
+            borderColor: chartColors.primary,
+            backgroundColor: `${chartColors.primary}20`,
+            borderWidth: 2,
+            pointBackgroundColor: chartColors.primary,
+            pointBorderColor: "#fff",
+            pointRadius: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          r: {
+            beginAtZero: true,
+            grid: { color: "#E4E4E7" },
+            angleLines: { color: "#E4E4E7" },
+            ticks: { display: false },
+          },
+        },
+      },
+    });
+  }
+}
+
+// Busiest Days Modal
+function initializeBusiestDaysModal() {
+  setupModalHandlers(
+    "busiestDaysZoomBtn",
+    "busiestDaysChartModal",
+    "closeBusiestDaysModal",
+    () => {
+      initializeDateRangeFilter(
+        "busiestDaysChartModal",
+        "busiestDaysDateFrom",
+        "busiestDaysDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-busiestDays",
+        "participant-checkbox-busiestDays"
+      );
+      setupAllParticipantsToggle(
+        "busiestDaysAllParticipants",
+        "participant-checkbox-busiestDays",
+        renderBusiestDaysModalChart
+      );
+      setupSliderValueDisplay("busiestDaysTopN", "busiestDaysTopNValue");
+      renderBusiestDaysModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyBusiestDaysFilters")
+    ?.addEventListener("click", renderBusiestDaysModalChart);
+  document
+    .getElementById("resetBusiestDaysFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("busiestDaysAllParticipants").checked = true;
+      document.getElementById("busiestDaysTopN").value = "10";
+      document.getElementById("busiestDaysTopNValue").textContent = "10";
+      initializeDateRangeFilter(
+        "busiestDaysChartModal",
+        "busiestDaysDateFrom",
+        "busiestDaysDateTo"
+      );
+      renderBusiestDaysModalChart();
+    });
+
+  document
+    .getElementById("busiestDaysTopN")
+    ?.addEventListener("input", renderBusiestDaysModalChart);
+}
+
+function renderBusiestDaysModalChart() {
+  const filtered = getFilteredMessages(
+    "busiestDaysDateFrom",
+    "busiestDaysDateTo",
+    "busiestDaysAllParticipants",
+    "participant-checkbox-busiestDays"
+  );
+
+  const allParticipants = document.getElementById(
+    "busiestDaysAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-busiestDays");
+  const topN = parseInt(
+    document.getElementById("busiestDaysTopN")?.value || "10"
+  );
+  const canvas = document.getElementById("busiestDaysChartModal-canvas");
+
+  if (modalChartInstances.busiestDays) {
+    modalChartInstances.busiestDays.destroy();
+  }
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getBusiestDaysByParticipants(
+      filtered,
+      selectedParticipants,
+      topN
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      backgroundColor: getParticipantColor(index),
+      borderRadius: 6,
+    }));
+
+    modalChartInstances.busiestDays = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  } else {
+    const chartData = getBusiestDays(filtered, topN);
+
+    modalChartInstances.busiestDays = new Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Messages",
+            data: chartData.data,
+            backgroundColor: chartColors.primary,
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  }
+}
+
+// Average Daily Messages Modal
+function initializeAvgDailyModal() {
+  setupModalHandlers(
+    "avgDailyZoomBtn",
+    "avgDailyChartModal",
+    "closeAvgDailyModal",
+    () => {
+      initializeDateRangeFilter(
+        "avgDailyChartModal",
+        "avgDailyDateFrom",
+        "avgDailyDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-avgDaily",
+        "participant-checkbox-avgDaily"
+      );
+      setupAllParticipantsToggle(
+        "avgDailyAllParticipants",
+        "participant-checkbox-avgDaily",
+        renderAvgDailyModalChart
+      );
+      renderAvgDailyModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyAvgDailyFilters")
+    ?.addEventListener("click", renderAvgDailyModalChart);
+  document
+    .getElementById("resetAvgDailyFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("avgDailyAllParticipants").checked = true;
+      document.getElementById("avgDailyGrouping").value = "weekly";
+      initializeDateRangeFilter(
+        "avgDailyChartModal",
+        "avgDailyDateFrom",
+        "avgDailyDateTo"
+      );
+      renderAvgDailyModalChart();
+    });
+
+  document
+    .getElementById("avgDailyGrouping")
+    ?.addEventListener("change", renderAvgDailyModalChart);
+}
+
+function renderAvgDailyModalChart() {
+  const filtered = getFilteredMessages(
+    "avgDailyDateFrom",
+    "avgDailyDateTo",
+    "avgDailyAllParticipants",
+    "participant-checkbox-avgDaily"
+  );
+
+  const allParticipants = document.getElementById(
+    "avgDailyAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-avgDaily");
+  const canvas = document.getElementById("avgDailyChartModal-canvas");
+
+  if (modalChartInstances.avgDaily) {
+    modalChartInstances.avgDaily.destroy();
+  }
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getAverageDailyMessagesByParticipants(
+      filtered,
+      selectedParticipants
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      borderColor: getParticipantColor(index),
+      backgroundColor: `${getParticipantColor(index)}30`,
+      fill: true,
+      tension: 0.4,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: getParticipantColor(index),
+    }));
+
+    modalChartInstances.avgDaily = new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  } else {
+    const chartData = getAverageDailyMessages(filtered);
+
+    modalChartInstances.avgDaily = new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Avg Messages/Day",
+            data: chartData.data,
+            borderColor: chartColors.secondary,
+            backgroundColor: `${chartColors.secondary}30`,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: chartColors.secondary,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  }
+}
+
+// Weekend vs Weekday Modal
+function initializeWeekendModal() {
+  setupModalHandlers(
+    "weekendZoomBtn",
+    "weekendChartModal",
+    "closeWeekendModal",
+    () => {
+      initializeDateRangeFilter(
+        "weekendChartModal",
+        "weekendDateFrom",
+        "weekendDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-weekend",
+        "participant-checkbox-weekend"
+      );
+      setupAllParticipantsToggle(
+        "weekendAllParticipants",
+        "participant-checkbox-weekend",
+        renderWeekendModalChart
+      );
+      renderWeekendModalChart();
+    }
+  );
+
+  document
+    .getElementById("applyWeekendFilters")
+    ?.addEventListener("click", renderWeekendModalChart);
+  document
+    .getElementById("resetWeekendFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("weekendAllParticipants").checked = true;
+      document.getElementById("weekendChartType").value = "bar";
+      initializeDateRangeFilter(
+        "weekendChartModal",
+        "weekendDateFrom",
+        "weekendDateTo"
+      );
+      renderWeekendModalChart();
+    });
+
+  document
+    .getElementById("weekendChartType")
+    ?.addEventListener("change", renderWeekendModalChart);
+}
+
+function renderWeekendModalChart() {
+  const filtered = getFilteredMessages(
+    "weekendDateFrom",
+    "weekendDateTo",
+    "weekendAllParticipants",
+    "participant-checkbox-weekend"
+  );
+
+  const allParticipants = document.getElementById(
+    "weekendAllParticipants"
+  )?.checked;
+  const selectedParticipants = allParticipants
+    ? null
+    : getSelectedParticipants("participant-checkbox-weekend");
+  const chartType = document.getElementById("weekendChartType")?.value || "bar";
+  const canvas = document.getElementById("weekendChartModal-canvas");
+
+  if (modalChartInstances.weekend) {
+    modalChartInstances.weekend.destroy();
+  }
+
+  if (
+    !allParticipants &&
+    selectedParticipants &&
+    selectedParticipants.length > 0
+  ) {
+    const chartData = getWeekendVsWeekdayByParticipants(
+      filtered,
+      selectedParticipants
+    );
+
+    const datasets = chartData.datasets.map((ds, index) => ({
+      label: ds.participant,
+      data: ds.data,
+      backgroundColor: getParticipantColor(index),
+      borderRadius: chartType === "bar" || chartType === "grouped" ? 8 : 0,
+      barThickness: chartType === "grouped" ? 40 : 100,
+    }));
+
+    modalChartInstances.weekend = new Chart(canvas, {
+      type: chartType === "grouped" ? "bar" : chartType,
+      data: {
+        labels: chartData.labels,
+        datasets: datasets,
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 12, padding: 10 },
+          },
+        },
+        scales:
+          chartType === "doughnut" || chartType === "pie"
+            ? {}
+            : {
+                y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+                x: { grid: { display: false } },
+              },
+      },
+    });
+  } else {
+    const chartData = getWeekendVsWeekday(filtered);
+
+    modalChartInstances.weekend = new Chart(canvas, {
+      type: chartType === "grouped" ? "bar" : chartType,
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Total Messages",
+            data: chartData.data,
+            backgroundColor: [chartColors.primary, chartColors.accent],
+            borderRadius:
+              chartType === "bar" || chartType === "grouped" ? 8 : 0,
+            barThickness: 100,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales:
+          chartType === "doughnut" || chartType === "pie"
+            ? {}
+            : {
+                y: { beginAtZero: true, grid: { color: "#E4E4E7" } },
+                x: { grid: { display: false } },
+              },
+      },
+    });
+  }
+}
+
+// Word Cloud Modal
+function initializeWordCloudModal() {
+  setupModalHandlers(
+    "wordCloudZoomBtn",
+    "wordCloudModal",
+    "closeWordCloudModal",
+    () => {
+      initializeDateRangeFilter(
+        "wordCloudModal",
+        "wordCloudDateFrom",
+        "wordCloudDateTo"
+      );
+      initializeParticipantFilter(
+        ".individual-participants-wordCloud",
+        "participant-checkbox-wordCloud"
+      );
+      setupAllParticipantsToggle(
+        "wordCloudAllParticipants",
+        "participant-checkbox-wordCloud",
+        renderWordCloudModal
+      );
+      setupSliderValueDisplay("wordCloudMinLength", "wordCloudMinLengthValue");
+      renderWordCloudModal();
+    }
+  );
+
+  document
+    .getElementById("applyWordCloudFilters")
+    ?.addEventListener("click", renderWordCloudModal);
+  document
+    .getElementById("resetWordCloudFilters")
+    ?.addEventListener("click", () => {
+      document.getElementById("wordCloudAllParticipants").checked = true;
+      document.getElementById("wordCloudCount").value = "50";
+      document.getElementById("wordCloudMinLength").value = "3";
+      document.getElementById("wordCloudMinLengthValue").textContent = "3";
+      initializeDateRangeFilter(
+        "wordCloudModal",
+        "wordCloudDateFrom",
+        "wordCloudDateTo"
+      );
+      renderWordCloudModal();
+    });
+
+  document
+    .getElementById("wordCloudCount")
+    ?.addEventListener("change", renderWordCloudModal);
+  document
+    .getElementById("wordCloudMinLength")
+    ?.addEventListener("input", renderWordCloudModal);
+}
+
+function renderWordCloudModal() {
+  const filtered = getFilteredMessages(
+    "wordCloudDateFrom",
+    "wordCloudDateTo",
+    "wordCloudAllParticipants",
+    "participant-checkbox-wordCloud"
+  );
+
+  const wordCount = parseInt(
+    document.getElementById("wordCloudCount")?.value || "50"
+  );
+  const minLength = parseInt(
+    document.getElementById("wordCloudMinLength")?.value || "3"
+  );
+
+  // Get word frequency data
+  const wordData = calculateWordFrequency(filtered);
+
+  // Filter by minimum length and limit to top N words
+  wordData.words = wordData.words
+    .filter(([word]) => word.length >= minLength)
+    .slice(0, wordCount);
+
+  const canvas = document.getElementById("wordCloudModal-canvas");
+  if (!canvas || !wordData.words.length) return;
+
+  // Clear canvas
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Render word cloud using the WordCloud library
+  const colors = ["#7C3AED", "#06B6D4", "#10B981", "#F43F5E", "#F97316"];
+  
+  // Adjust sizing based on word count for better visibility
+  const scaleFactor = wordCount > 100 ? 0.8 : wordCount > 50 ? 1.2 : 1.5;
+
+  WordCloud(canvas, {
+    list: wordData.words,
+    gridSize: wordCount > 100 ? 8 : 12,
+    weightFactor: function (size) {
+      return Math.pow(size, 0.5) * scaleFactor;
+    },
+    fontFamily: "Inter, system-ui, sans-serif",
+    color: function (word, weight) {
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    rotateRatio: 0.2,
+    rotationSteps: 2,
+    backgroundColor: "transparent",
+    minSize: wordCount > 100 ? 6 : 8,
+    drawOutOfBound: false,
+    shrinkToFit: true,
+  });
 }

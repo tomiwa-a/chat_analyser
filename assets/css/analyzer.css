@@ -3,6 +3,12 @@
   min-height: 100vh;
 }
 
+/* Hide chart cards by default until data is loaded */
+.chart-grid-2 .chart-card,
+.chart-grid-3 .chart-card {
+  display: none;
+}
+
 .upload-section {
   margin: 2rem 0 1rem;
 }
@@ -1011,4 +1017,107 @@
 .hourly-chart-canvas {
   height: 280px !important;
   width: 100% !important;
+}
+
+/* Additional Modal Styles for New Filters */
+.filter-select {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  background-color: var(--color-bg-card);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.filter-select:hover {
+  border-color: var(--color-primary);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.filter-slider {
+  width: calc(100% - 60px);
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-bg-muted);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.filter-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.filter-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+}
+
+.filter-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.filter-value {
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-left: 0.5rem;
+}
+
+.word-cloud-modal .modal-content {
+  max-width: 95vw;
+  width: 1400px;
+}
+
+.word-cloud-container {
+  min-height: 600px;
+  background: var(--color-bg);
+  border-radius: 1rem;
+}
+
+/* Responsive adjustments for modals */
+@media (max-width: 768px) {
+  .modal-filters {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .filter-slider {
+    width: calc(100% - 50px);
+  }
+  
+  .word-cloud-modal .modal-content {
+    width: 95vw;
+  }
 }
