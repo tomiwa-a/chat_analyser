@@ -1953,18 +1953,46 @@ function renderWordCloudModal() {
   const wordCount = parseInt(
     document.getElementById("wordCloudCount")?.value || "50"
   );
+  const minLength = parseInt(
+    document.getElementById("wordCloudMinLength")?.value || "3"
+  );
+
+  // Get word frequency data
   const wordData = calculateWordFrequency(filtered);
 
-  // Limit to top N words
-  wordData.words = wordData.words.slice(0, wordCount);
+  // Filter by minimum length and limit to top N words
+  wordData.words = wordData.words
+    .filter(([word]) => word.length >= minLength)
+    .slice(0, wordCount);
 
   const canvas = document.getElementById("wordCloudModal-canvas");
-  if (canvas) {
-    // Clear canvas
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!canvas || !wordData.words.length) return;
 
-    // Render word cloud
-    renderWordCloudData(wordData);
-  }
+  // Clear canvas
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Render word cloud using the WordCloud library
+  const colors = ["#7C3AED", "#06B6D4", "#10B981", "#F43F5E", "#F97316"];
+  
+  // Adjust sizing based on word count for better visibility
+  const scaleFactor = wordCount > 100 ? 0.8 : wordCount > 50 ? 1.2 : 1.5;
+
+  WordCloud(canvas, {
+    list: wordData.words,
+    gridSize: wordCount > 100 ? 8 : 12,
+    weightFactor: function (size) {
+      return Math.pow(size, 0.5) * scaleFactor;
+    },
+    fontFamily: "Inter, system-ui, sans-serif",
+    color: function (word, weight) {
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    rotateRatio: 0.2,
+    rotationSteps: 2,
+    backgroundColor: "transparent",
+    minSize: wordCount > 100 ? 6 : 8,
+    drawOutOfBound: false,
+    shrinkToFit: true,
+  });
 }
