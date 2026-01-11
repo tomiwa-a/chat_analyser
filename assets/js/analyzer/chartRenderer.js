@@ -5,6 +5,7 @@ import {
   getActivityOverTime,
   getHourlyActivity,
 } from "./dataProcessor.js";
+import { getDisplayName } from "./participantNames.js";
 
 let chartInstances = {};
 let modalChartInstance = null;
@@ -408,7 +409,7 @@ function initializeModalFilters() {
         <label class="checkbox-label">
           <input type="checkbox" class="participant-checkbox" value="${p}" data-index="${index}">
           <span class="checkbox-custom"></span>
-          <span class="participant-name">${p}</span>
+          <span class="participant-name" data-original="${p}">${getDisplayName(p)}</span>
         </label>
       `
         )

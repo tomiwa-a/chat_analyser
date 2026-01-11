@@ -1,4 +1,5 @@
 import { getParticipantsList, getParsedMessages } from "./dataProcessor.js";
+import { getDisplayName } from "./participantNames.js";
 
 // Initialize date range filters for a modal
 export function initializeDateRangeFilter(modalId, dateFromId, dateToId) {
@@ -39,7 +40,7 @@ export function initializeParticipantFilter(containerId, checkboxPrefix) {
     <label class="checkbox-label">
       <input type="checkbox" class="participant-checkbox ${checkboxPrefix}" value="${p}" data-index="${index}">
       <span class="checkbox-custom"></span>
-      <span class="participant-name">${p}</span>
+      <span class="participant-name" data-original="${p}">${getDisplayName(p)}</span>
     </label>
   `
     )

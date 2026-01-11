@@ -1,4 +1,5 @@
 import { formatDate } from "./utils.js";
+import { getDisplayName } from "./participantNames.js";
 
 let parsedMessages = null;
 
@@ -1155,10 +1156,10 @@ export function updateParticipantCards(messages, stats) {
     card.innerHTML = `
       <div class="participant-header">
         <div class="participant-avatar ${getAvatarColor(index)}">${getInitials(
-      participant
+      getDisplayName(participant)
     )}</div>
         <div class="participant-info">
-          <h3 class="participant-name">${participant}</h3>
+          <h3 class="participant-name" data-original="${participant}">${getDisplayName(participant)}</h3>
           <p class="participant-meta">${messageCount.toLocaleString()} messages • ${percentage}%</p>
         </div>
       </div>
